@@ -18,6 +18,12 @@ func Provider() *schema.Provider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("GFW_TOKEN", nil),
 			},
+			"url": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    false,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("GFW_URL", nil),
+			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gfw_action":           resourceAction(),
@@ -36,10 +42,12 @@ func Provider() *schema.Provider {
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	token := d.Get("token").(string)
 
+	url := d.Get("url").(string)
+
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c, err := api.NewClient("http://localhost:3000/v2", token)
+	c, err := api.NewClient(url, token)
 	if err != nil {
 		return nil, diag.FromErr(err)
 	}

@@ -27,8 +27,6 @@ func NewClient(host, token string) (*GFWClient, error) {
 
 func (c *GFWClient) doRequest(req *http.Request) ([]byte, error) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
-	req.Header.Set("permissions", `[{ "action": "read-all", "type": "entity", "value": "action" },{ "action": "create-all", "type": "entity", "value": "action" }]`)
-	req.Header.Set("user", `{"id":-1}`)
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
