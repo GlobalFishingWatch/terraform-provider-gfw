@@ -17,42 +17,39 @@ description: |-
 
 ### Required
 
-- **action** (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--action))
-- **description** (String)
-- **name** (String)
-- **resource** (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--resource))
+- `action` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--action))
+- `description` (String)
+- `name` (String)
+- `resource` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--resource))
 
 ### Optional
 
-- **created_at** (String)
-- **id** (String) The ID of this resource.
+- `created_at` (String)
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 <a id="nestedblock--action"></a>
 ### Nested Schema for `action`
 
-Required:
-
-- **id** (Number) The ID of this resource.
-
 Read-Only:
 
-- **created_at** (String)
-- **description** (String)
-- **name** (String)
+- `created_at` (String)
+- `description` (String)
+- `id` (Number) The ID of this resource.
+- `name` (String)
 
 
 <a id="nestedblock--resource"></a>
 ### Nested Schema for `resource`
 
-Required:
-
-- **id** (Number) The ID of this resource.
-
 Read-Only:
 
-- **created_at** (String)
-- **description** (String)
-- **type** (String)
-- **value** (String)
+- `created_at` (String)
+- `description` (String)
+- `id` (Number) The ID of this resource.
+- `type` (String)
+- `value` (String)
 
 

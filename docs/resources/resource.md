@@ -17,13 +17,16 @@ description: |-
 
 ### Required
 
-- **description** (String)
-- **type** (String)
-- **value** (String)
+- `description` (String)
+- `type` (String)
+- `value` (String)
 
 ### Optional
 
-- **created_at** (String)
-- **id** (String) The ID of this resource.
+- `created_at` (String)
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 

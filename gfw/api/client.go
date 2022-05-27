@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -39,8 +40,13 @@ func (c *GFWClient) doRequest(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("status: %d, body: %s", res.StatusCode, body)
+	if res.StatusCode >= 300 {
+		appError := AppError{}
+		err = json.Unmarshal(body, &appError)
+		if err != nil {
+			return nil, err
+		}
+		return nil, appError
 	}
 
 	return body, err

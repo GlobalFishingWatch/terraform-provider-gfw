@@ -17,11 +17,11 @@ description: |-
 
 ### Required
 
-- **permissions** (Set of Number)
-- **role** (Number)
+- `permissions` (Set of Number)
+- `role` (Number)
 
-### Optional
+### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 

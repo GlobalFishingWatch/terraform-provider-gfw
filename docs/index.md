@@ -17,4 +17,5 @@ description: |-
 
 ### Required
 
-- **token** (String)
+- `token` (String)
+- `url` (String)
