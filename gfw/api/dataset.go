@@ -56,7 +56,9 @@ func (c *GFWClient) DeleteDataset(id string) (*Dataset, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	dataset := Dataset{}
 	err = json.Unmarshal(body, &dataset)
 	if err != nil {

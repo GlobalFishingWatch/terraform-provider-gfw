@@ -59,7 +59,9 @@ func (c *GFWClient) DeleteRole(id string) (*Role, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	action := Role{}
 	err = json.Unmarshal(body, &action)
 	if err != nil {

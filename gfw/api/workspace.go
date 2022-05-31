@@ -58,7 +58,9 @@ func (c *GFWClient) DeleteWorkspace(id string) (*Workspace, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	workspace := Workspace{}
 	err = json.Unmarshal(body, &workspace)
 	if err != nil {

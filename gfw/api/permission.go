@@ -56,7 +56,9 @@ func (c *GFWClient) DeletePermission(id string) (*Permission, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	permission := Permission{}
 	err = json.Unmarshal(body, &permission)
 	if err != nil {

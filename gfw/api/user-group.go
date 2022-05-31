@@ -59,7 +59,9 @@ func (c *GFWClient) DeleteUserGroup(id string) (*UserGroup, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	action := UserGroup{}
 	err = json.Unmarshal(body, &action)
 	if err != nil {

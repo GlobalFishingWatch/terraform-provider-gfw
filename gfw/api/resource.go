@@ -56,7 +56,9 @@ func (c *GFWClient) DeleteResource(id string) (*Resource, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	resource := Resource{}
 	err = json.Unmarshal(body, &resource)
 	if err != nil {

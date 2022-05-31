@@ -56,7 +56,9 @@ func (c *GFWClient) DeleteDataview(id string) (*Dataview, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	dataview := Dataview{}
 	err = json.Unmarshal(body, &dataview)
 	if err != nil {

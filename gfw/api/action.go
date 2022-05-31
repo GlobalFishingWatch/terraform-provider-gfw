@@ -56,7 +56,9 @@ func (c *GFWClient) DeleteAction(id string) (*Action, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if len(body) == 0 {
+		return nil, nil
+	}
 	action := Action{}
 	err = json.Unmarshal(body, &action)
 	if err != nil {
