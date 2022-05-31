@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -26,9 +28,26 @@ func NewClient(host, token string) (*GFWClient, error) {
 	return &c, nil
 }
 
+func valuesToRaw(query url.Values) string {
+	rawQuery := ""
+	count := 0
+	for k, v := range query {
+		if count == 0 {
+			rawQuery = fmt.Sprintf("%s=%s", k, url.QueryEscape(strings.Join(v, ",")))
+		} else {
+			rawQuery = fmt.Sprintf("%s&%s=%s", rawQuery, k, url.QueryEscape(strings.Join(v, ",")))
+		}
+		count++
+	}
+	return rawQuery
+}
+
 func (c *GFWClient) doRequest(req *http.Request) ([]byte, error) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
+	query := req.URL.Query()
+	query.Set("cache", "false")
 
+	req.URL.RawQuery = valuesToRaw(query)
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err

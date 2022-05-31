@@ -2,6 +2,7 @@ package gfw
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/api"
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/utils"
@@ -314,9 +315,9 @@ func resourceDataset() *schema.Resource {
 				Optional: true,
 			},
 			"schema": {
-				Type:     schema.TypeMap,
-				Elem:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsJSON,
 			},
 			"created_at": {
 				Type:     schema.TypeString,
@@ -333,7 +334,10 @@ func resourceDatasetCreate(ctx context.Context, d *schema.ResourceData, m interf
 	var diags diag.Diagnostics
 
 	id := d.Get("dataset_id").(string)
-	dataset := schemaToDataset(d)
+	dataset, err := schemaToDataset(d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	dataset.ID = id
 	datasetCreated, err := c.CreateDataset(dataset)
 	if err != nil {
@@ -367,8 +371,15 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("source", dataset.Source)
 	d.Set("fields_allowed", dataset.FieldsAllowed)
 	d.Set("type", dataset.Type)
+
 	if dataset.Schema != nil {
-		d.Set("schema", dataset.Schema)
+		jsonStr, err := json.Marshal(dataset.Schema)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		if err := d.Set("schema", string(jsonStr)); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	if dataset.Configuration != nil {
@@ -387,17 +398,20 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 }
 
 func resourceDatasetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	dataset := schemaToDataset(d)
+	dataset, err := schemaToDataset(d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	datasetId := d.Id()
 	c := m.(*api.GFWClient)
-	err := c.UpdateDataset(datasetId, dataset)
+	err = c.UpdateDataset(datasetId, dataset)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	return resourceDatasetRead(ctx, d, m)
 }
 
-func schemaToDataset(d *schema.ResourceData) api.CreateDataset {
+func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 	dataset := api.CreateDataset{}
 	if d.HasChange("name") {
 		dataset.Name = d.Get("name").(string)
@@ -433,8 +447,12 @@ func schemaToDataset(d *schema.ResourceData) api.CreateDataset {
 		dataset.FieldsAllowed = utils.ConvertArrayInterfaceToArrayString(d.Get("fields_allowed").([]interface{}))
 	}
 	if d.HasChange("schema") && d.Get("schema") != nil {
-		schema := d.Get("schema").(map[string]interface{})
-		dataset.Schema = &schema
+		var obj map[string]interface{}
+		err := json.Unmarshal([]byte(d.Get("schema").(string)), &obj)
+		if err != nil {
+			return api.CreateDataset{}, err
+		}
+		dataset.Schema = &obj
 	}
 	if d.HasChange("configuration") && d.Get("configuration") != nil {
 		configuration := d.Get("configuration").([]interface{})
@@ -448,7 +466,7 @@ func schemaToDataset(d *schema.ResourceData) api.CreateDataset {
 		dataset.RelatedDatasets = relatedDatasets
 	}
 
-	return dataset
+	return dataset, nil
 }
 
 func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConfiguration {
