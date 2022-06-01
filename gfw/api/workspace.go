@@ -125,7 +125,7 @@ func (c *GFWClient) CreateWorkspace(workspace CreateWorkspace) (*Workspace, erro
 }
 
 func (c *GFWClient) checkExistWorkspace(id string) (*Workspace, error) {
-	_, err := c.GetWorkspace(id)
+	exists, err := c.GetWorkspace(id)
 	if err != nil {
 		if re, ok := err.(AppError); ok {
 			if re.Code == NotFoundCode {
@@ -135,5 +135,5 @@ func (c *GFWClient) checkExistWorkspace(id string) (*Workspace, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return exists, nil
 }

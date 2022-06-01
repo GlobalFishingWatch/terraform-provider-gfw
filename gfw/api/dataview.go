@@ -119,7 +119,7 @@ func (c *GFWClient) CreateDataview(dataview CreateDataview) (*Dataview, error) {
 }
 
 func (c *GFWClient) checkExistDataview(id string) (*Dataview, error) {
-	_, err := c.GetDataview(id)
+	exists, err := c.GetDataview(id)
 	if err != nil {
 		if re, ok := err.(AppError); ok {
 			if re.Code == NotFoundCode {
@@ -129,5 +129,5 @@ func (c *GFWClient) checkExistDataview(id string) (*Dataview, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return exists, nil
 }
