@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-var TYPES []string = []string{
+var DATASET_TYPES []string = []string{
 	"tracks:v1",
 	"vessels:v1",
 	"events:v1",
@@ -22,7 +22,7 @@ var TYPES []string = []string{
 	"data-download:v1",
 	"temporal-context-layer:v1",
 }
-var CATEGORIES []string = []string{
+var DATASET_CATEGORIES []string = []string{
 	"activity",
 	"context",
 	"context-layer",
@@ -31,7 +31,7 @@ var CATEGORIES []string = []string{
 	"event",
 	"vessel",
 }
-var SUBCATEGORIES []string = []string{
+var DATASET_SUBCATEGORIES []string = []string{
 	"track",
 	"loitering",
 	"presence",
@@ -45,7 +45,7 @@ var SUBCATEGORIES []string = []string{
 	"chlorophyl",
 	"water-temperature",
 }
-var UNITS []string = []string{
+var DATASET_UNITS []string = []string{
 	"unit",
 	"TBD",
 	"probability",
@@ -56,8 +56,8 @@ var UNITS []string = []string{
 	"ºC",
 	"detections",
 }
-var CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
-var CONFIGURATION_FORMATS []string = []string{"geojson"}
+var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
+var DATASET_CONFIGURATION_FORMATS []string = []string{"geojson"}
 
 func resourceDataset() *schema.Resource {
 	return &schema.Resource{
@@ -77,7 +77,7 @@ func resourceDataset() *schema.Resource {
 			"type": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringInSlice(TYPES, false),
+				ValidateFunc: validation.StringInSlice(DATASET_TYPES, false),
 			},
 			"alias": {
 				Elem: &schema.Schema{
@@ -103,17 +103,17 @@ func resourceDataset() *schema.Resource {
 			"unit": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringInSlice(UNITS, false),
+				ValidateFunc: validation.StringInSlice(DATASET_UNITS, false),
 			},
 			"category": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringInSlice(CATEGORIES, false),
+				ValidateFunc: validation.StringInSlice(DATASET_CATEGORIES, false),
 			},
 			"subcategory": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringInSlice(SUBCATEGORIES, false),
+				ValidateFunc: validation.StringInSlice(DATASET_SUBCATEGORIES, false),
 			},
 			"source": {
 				Type:     schema.TypeString,
@@ -127,7 +127,7 @@ func resourceDataset() *schema.Resource {
 						"type": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice(TYPES, false),
+							ValidateFunc: validation.StringInSlice(DATASET_TYPES, false),
 						},
 						"id": {
 							Type:     schema.TypeString,
@@ -149,12 +149,30 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 						},
+						"interaction_columns": {
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
+						"interaction_group_columns": {
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
 						"max_zoom": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Default:  12,
 						},
 						"source": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"function": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -190,8 +208,11 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"interval": {
-							Type:     schema.TypeString,
+						"intervals": {
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Type:     schema.TypeList,
 							Optional: true,
 						},
 						"num_bytes": {
@@ -256,7 +277,7 @@ func resourceDataset() *schema.Resource {
 						"geometry_type": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							ValidateFunc: validation.StringInSlice(CONFIGURATION_GEOMETRY_TYPES, false),
+							ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_GEOMETRY_TYPES, false),
 						},
 						"property_to_include": {
 							Type:     schema.TypeString,
@@ -290,7 +311,7 @@ func resourceDataset() *schema.Resource {
 						"format": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							ValidateFunc: validation.StringInSlice(CONFIGURATION_FORMATS, false),
+							ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_FORMATS, false),
 						},
 						"latitude": {
 							Type:     schema.TypeString,
@@ -472,6 +493,7 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConfiguration {
 	config := api.DatasetConfiguration{
 		Source:            schema["source"].(string),
+		Function:          schema["function"].(string),
 		Type:              schema["type"].(string),
 		GeometryColumn:    schema["geometry_column"].(string),
 		DatabaseInstance:  schema["database_instance"].(string),
@@ -480,7 +502,6 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		Table:             schema["table"].(string),
 		Bucket:            schema["bucket"].(string),
 		Folder:            schema["folder"].(string),
-		Interval:          schema["interval"].(string),
 		Index:             schema["index"].(string),
 		GeometryType:      schema["geometry_type"].(string),
 		PropertyToInclude: schema["property_to_include"].(string),
@@ -509,6 +530,15 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 	}
 	if val, ok := schema["api_supported_versions"]; ok {
 		config.ApiSupportedVersions = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["intervals"]; ok {
+		config.Intervals = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["interaction_group_columns"]; ok {
+		config.InteractionGroupColumns = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["interaction_columns"]; ok {
+		config.InteractionColumns = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
 	}
 	if val, ok := schema["fields"]; ok {
 		config.Fields = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
@@ -584,8 +614,11 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a := make(map[string]interface{})
 
 	a["api_supported_versions"] = config.ApiSupportedVersions
+	a["interaction_columns"] = config.InteractionColumns
+	a["interaction_group_columns"] = config.InteractionGroupColumns
 	a["max_zoom"] = config.MaxZoom
 	a["source"] = config.Source
+	a["function"] = config.Function
 	a["type"] = config.Type
 	a["geometry_column"] = config.GeometryColumn
 	a["database_instance"] = config.DatabaseInstance
@@ -594,7 +627,7 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["table"] = config.Table
 	a["bucket"] = config.Bucket
 	a["folder"] = config.Folder
-	a["interval"] = config.Interval
+	a["intervals"] = config.Intervals
 	a["num_layers"] = config.NumLayers
 	a["index"] = config.Index
 	a["version"] = config.Version
