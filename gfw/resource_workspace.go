@@ -28,8 +28,9 @@ func resourceWorkspace() *schema.Resource {
 				Required: true,
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.StringIsNotEmpty,
 			},
 			"category": {
 				Type:         schema.TypeString,
@@ -111,6 +112,14 @@ func resourceWorkspace() *schema.Resource {
 							Type:     schema.TypeInt,
 							Required: true,
 						},
+						"datasets_config": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type:         schema.TypeString,
+								ValidateFunc: validation.StringIsJSON,
+							},
+						},
 					},
 				},
 			},
@@ -161,7 +170,13 @@ func resourceWorkspaceRead(ctx context.Context, d *schema.ResourceData, m interf
 	d.Set("end_at", workspace.EndAt)
 	d.Set("category", workspace.Category)
 	d.Set("aoi", workspace.Aoi)
-	d.Set("workspaces", workspace.Dataviews)
+	if len(workspace.Dataviews) > 0 {
+		list := make([]int, len(workspace.Dataviews))
+		for i, n := range workspace.Dataviews {
+			list[i] = n.ID
+		}
+		d.Set("dataviews", list)
+	}
 
 	if workspace.Viewport != nil {
 		configuration := flattenWorkspaceViewport(*workspace.Viewport)
@@ -291,6 +306,20 @@ func schemaToWorkspaceDataviewInstances(schema []interface{}) ([]api.WorkspaceDa
 			}
 			list[i].Config = &obj
 		}
+		if mp["datasets_config"] != nil {
+			listDatasets := mp["datasets_config"].([]interface{})
+			datasetsConfig := make([]map[string]interface{}, len(listDatasets))
+			for i, m := range listDatasets {
+				var obj map[string]interface{}
+				err := json.Unmarshal([]byte(m.(string)), &obj)
+				if err != nil {
+					return nil, err
+				}
+				datasetsConfig[i] = obj
+			}
+
+			list[i].DatasetsConfig = datasetsConfig
+		}
 
 	}
 
@@ -334,7 +363,19 @@ func flattenWorkspaceDataviewInstances(dataviewInstances []api.WorkspaceDataview
 			}
 			a["config"] = string(jsonStr)
 		}
+		if di.DatasetsConfig != nil {
+			jsonStrArr := make([]string, len(di.DatasetsConfig))
+			for i, m := range di.DatasetsConfig {
+				jsonStr, err := json.Marshal(m)
+				if err != nil {
+					return nil, err
+				}
+				jsonStrArr[i] = string(jsonStr)
+			}
+			a["datasets_config"] = jsonStrArr
+		}
 		list[i] = a
+
 	}
 	return list, nil
 }

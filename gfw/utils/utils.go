@@ -50,7 +50,7 @@ func ConvertArrayInterfaceToArrayString(arrayInt []interface{}) []string {
 
 func ConvertArrayInterfaceToArrayInt(arrayInterface []interface{}) []int {
 	arrayInt := make([]int, len(arrayInterface))
-	for i, v := range arrayInt {
+	for i, v := range arrayInterface {
 		num, _ := strconv.Atoi(fmt.Sprint(v))
 		arrayInt[i] = num
 	}

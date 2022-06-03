@@ -207,24 +207,27 @@ type WorkspaceViewport struct {
 }
 
 type WorkspaceDataviewInstance struct {
-	ID         string                  `json:"id"`
-	Config     *map[string]interface{} `json:"config"`
-	DataviewID int                     `json:"dataviewId"`
+	ID             string                   `json:"id"`
+	Config         *map[string]interface{}  `json:"config"`
+	DataviewID     int                      `json:"dataviewId"`
+	DatasetsConfig []map[string]interface{} `json:"datasetsConfig"`
 }
 
 type Workspace struct {
-	ID                string                       `json:"id"`
-	Name              string                       `json:"name"`
-	Description       string                       `json:"description"`
-	Category          string                       `json:"category"`
-	App               string                       `json:"app"`
-	Aoi               string                       `json:"aoi"`
-	StartAt           string                       `json:"startAt"`
-	EndAt             string                       `json:"endAt"`
-	Public            bool                         `json:"public"`
-	Viewport          *WorkspaceViewport           `json:"viewport"`
-	State             *map[string]interface{}      `json:"state"`
-	Dataviews         []int                        `json:"dataviews"`
+	ID          string                  `json:"id"`
+	Name        string                  `json:"name"`
+	Description string                  `json:"description"`
+	Category    string                  `json:"category"`
+	App         string                  `json:"app"`
+	Aoi         string                  `json:"aoi"`
+	StartAt     string                  `json:"startAt"`
+	EndAt       string                  `json:"endAt"`
+	Public      bool                    `json:"public"`
+	Viewport    *WorkspaceViewport      `json:"viewport"`
+	State       *map[string]interface{} `json:"state"`
+	Dataviews   []struct {
+		ID int `json:"id"`
+	} `json:"dataviews"`
 	DataviewInstances *[]WorkspaceDataviewInstance `json:"dataviewInstances"`
 	CreatedAt         string                       `json:"createdAt"`
 }

@@ -45,7 +45,7 @@ func (c *GFWClient) GetWorkspace(id string) (*Workspace, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	workspace.Public = strings.HasSuffix(workspace.ID, "-public")
 	return &workspace, nil
 }
 
