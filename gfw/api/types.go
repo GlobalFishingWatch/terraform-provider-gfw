@@ -166,11 +166,20 @@ type CreateDataset struct {
 	FieldsAllowed   []string                `json:"fieldsAllowed,omitempty"`
 }
 
+type DataviewLayer struct {
+	ID      string `json:"id"`
+	Dataset string `json:"dataset"`
+}
 type DataviewConfiguration struct {
-	Type      string   `json:"type"`
-	Color     string   `json:"color"`
-	Datasets  []string `json:"datasets"`
-	ColorRamp string   `json:"colorRamp"`
+	Type                 string          `json:"type"`
+	Color                string          `json:"color"`
+	Datasets             []string        `json:"datasets"`
+	ColorRamp            string          `json:"colorRamp"`
+	MaxZoom              int             `json:"maxZoom"`
+	AggregationOperation string          `json:"aggregationOperation"`
+	Layers               []DataviewLayer `json:"layers"`
+	Breaks               []float64       `json:"breaks"`
+	Intervals            []string        `json:"intervals"`
 }
 
 type Dataview struct {
@@ -184,6 +193,8 @@ type Dataview struct {
 	UpdatedAt      string                    `json:"updatedAt"`
 	Config         *DataviewConfiguration    `json:"config"`
 	InfoConfig     *map[string]interface{}   `json:"infoConfig"`
+	EventsConfig   *map[string]interface{}   `json:"eventsConfig"`
+	FiltersConfig  *map[string]interface{}   `json:"filtersConfig"`
 	DatasetsConfig *[]map[string]interface{} `json:"datasetsConfig"`
 }
 
@@ -197,6 +208,8 @@ type CreateDataview struct {
 	UpdatedAt      string                    `json:"updatedAt,omitempty"`
 	Config         *DataviewConfiguration    `json:"config,omitempty"`
 	InfoConfig     *map[string]interface{}   `json:"infoConfig,omitempty"`
+	EventsConfig   *map[string]interface{}   `json:"eventsConfig,omitempty"`
+	FiltersConfig  *map[string]interface{}   `json:"filtersConfig,omitempty"`
 	DatasetsConfig *[]map[string]interface{} `json:"datasetsConfig,omitempty"`
 }
 
@@ -209,6 +222,7 @@ type WorkspaceViewport struct {
 type WorkspaceDataviewInstance struct {
 	ID             string                   `json:"id"`
 	Config         *map[string]interface{}  `json:"config"`
+	Category       string                   `json:"category"`
 	DataviewID     int                      `json:"dataviewId"`
 	DatasetsConfig []map[string]interface{} `json:"datasetsConfig"`
 }

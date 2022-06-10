@@ -103,6 +103,10 @@ func resourceWorkspace() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 						},
+						"category": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"config": {
 							Type:         schema.TypeString,
 							Optional:     true,
@@ -296,6 +300,7 @@ func schemaToWorkspaceDataviewInstances(schema []interface{}) ([]api.WorkspaceDa
 		mp := inter.(map[string]interface{})
 		list[i] = api.WorkspaceDataviewInstance{
 			ID:         mp["id"].(string),
+			Category:   mp["category"].(string),
 			DataviewID: mp["dataview_id"].(int),
 		}
 		if mp["config"].(string) != "" {
@@ -355,6 +360,7 @@ func flattenWorkspaceDataviewInstances(dataviewInstances []api.WorkspaceDataview
 
 		a := make(map[string]interface{})
 		a["id"] = di.ID
+		a["category"] = di.Category
 		a["dataview_id"] = di.DataviewID
 		if di.Config != nil {
 			jsonStr, err := json.Marshal(di.Config)

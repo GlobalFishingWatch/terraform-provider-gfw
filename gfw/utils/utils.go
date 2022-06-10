@@ -57,6 +57,15 @@ func ConvertArrayInterfaceToArrayInt(arrayInterface []interface{}) []int {
 	return arrayInt
 }
 
+func ConvertArrayInterfaceToArrayFloat(arrayInterface []interface{}) []float64 {
+	arrayInt := make([]float64, len(arrayInterface))
+	for i, v := range arrayInterface {
+		num, _ := strconv.ParseFloat(fmt.Sprint(v), 64)
+		arrayInt[i] = num
+	}
+	return arrayInt
+}
+
 func IsISOTime(i interface{}, k string) (warnings []string, errors []error) {
 	v, ok := i.(string)
 	if !ok {

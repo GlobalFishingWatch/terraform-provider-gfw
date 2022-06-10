@@ -12,8 +12,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-var DATAVIEW_TYPES []string = []string{"context", "environment", "fishing", "presence", "events", "vessels"}
+var DATAVIEW_TYPES []string = []string{"context", "environment", "activity", "detections", "events", "vessels"}
 var DATAVIEW_APPS []string = []string{"fishing-map", "vessel-history"}
+var DATAVIEW_CONFIG_INTERVALS []string = []string{"hours", "day", "10days", "month"}
 var DATAVIEW_CONFIG_TYPES []string = []string{
 	"BASEMAP",
 	"HEATMAP",
@@ -22,6 +23,12 @@ var DATAVIEW_CONFIG_TYPES []string = []string{
 	"CONTEXT",
 	"USER_CONTEXT",
 	"TILE_CLUSTER",
+	"BACKGROUND",
+	"POLYGONS",
+	"USER_CONTEXT",
+	"USER_POINTS",
+	"VESSEL_EVENTS",
+	"VESSEL_EVENTS_SHAPES",
 }
 
 func resourceDataview() *schema.Resource {
@@ -67,6 +74,16 @@ func resourceDataview() *schema.Resource {
 				Optional:     true,
 				ValidateFunc: validation.StringIsJSON,
 			},
+			"events_config": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsJSON,
+			},
+			"filters_config": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsJSON,
+			},
 			"config": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -80,10 +97,49 @@ func resourceDataview() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 						},
+						"intervals": {
+							Elem: &schema.Schema{
+								Type:         schema.TypeString,
+								ValidateFunc: validation.StringInSlice(DATAVIEW_CONFIG_INTERVALS, false),
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
+						"breaks": {
+							Elem: &schema.Schema{
+								Type: schema.TypeFloat,
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
+						"layers": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"id": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"dataset": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
 						"type": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice(DATAVIEW_CONFIG_TYPES, false),
+						},
+						"aggregation_operation": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"max_zoom": {
+							Type:     schema.TypeInt,
+							Optional: true,
 						},
 						"color": {
 							Type:     schema.TypeString,
@@ -161,6 +217,24 @@ func resourceDataviewRead(ctx context.Context, d *schema.ResourceData, m interfa
 			return diag.FromErr(err)
 		}
 	}
+	if dataview.FiltersConfig != nil {
+		jsonStr, err := json.Marshal(dataview.FiltersConfig)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		if err := d.Set("filters_config", string(jsonStr)); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	if dataview.EventsConfig != nil {
+		jsonStr, err := json.Marshal(dataview.EventsConfig)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		if err := d.Set("events_config", string(jsonStr)); err != nil {
+			return diag.FromErr(err)
+		}
+	}
 	if dataview.DatasetsConfig != nil {
 		jsonStrArr := make([]string, len(*dataview.DatasetsConfig))
 		for i, m := range *dataview.DatasetsConfig {
@@ -227,6 +301,22 @@ func schemaToDataview(d *schema.ResourceData) (api.CreateDataview, error) {
 		}
 		dataview.InfoConfig = &obj
 	}
+	if d.HasChange("filtersConfig") && d.Get("filtersConfig") != nil {
+		var obj map[string]interface{}
+		err := json.Unmarshal([]byte(d.Get("filtersConfig").(string)), &obj)
+		if err != nil {
+			return api.CreateDataview{}, err
+		}
+		dataview.FiltersConfig = &obj
+	}
+	if d.HasChange("eventsConfig") && d.Get("eventsConfig") != nil {
+		var obj map[string]interface{}
+		err := json.Unmarshal([]byte(d.Get("eventsConfig").(string)), &obj)
+		if err != nil {
+			return api.CreateDataview{}, err
+		}
+		dataview.EventsConfig = &obj
+	}
 	if d.HasChange("datasets_config") && d.Get("datasets_config") != nil {
 		list := d.Get("datasets_config").([]interface{})
 		datasetsConfig := make([]map[string]interface{}, len(list))
@@ -247,13 +337,38 @@ func schemaToDataview(d *schema.ResourceData) (api.CreateDataview, error) {
 
 func schemaToDataviewConfiguration(schema map[string]interface{}) api.DataviewConfiguration {
 	config := api.DataviewConfiguration{
-		Type:      schema["type"].(string),
-		Color:     schema["color"].(string),
-		ColorRamp: schema["color_ramp"].(string),
-		Datasets:  utils.ConvertArrayInterfaceToArrayString(schema["datasets"].([]interface{})),
+		Type:                 schema["type"].(string),
+		Color:                schema["color"].(string),
+		ColorRamp:            schema["color_ramp"].(string),
+		Datasets:             utils.ConvertArrayInterfaceToArrayString(schema["datasets"].([]interface{})),
+		Intervals:            utils.ConvertArrayInterfaceToArrayString(schema["intervals"].([]interface{})),
+		Breaks:               utils.ConvertArrayInterfaceToArrayFloat(schema["breaks"].([]interface{})),
+		MaxZoom:              schema["max_zoom"].(int),
+		AggregationOperation: schema["aggregation_operation"].(string),
+	}
+	if val, ok := schema["layers"]; ok {
+		layers := val.([]interface{})
+		if len(layers) > 0 {
+			arr := make([]api.DataviewLayer, len(layers))
+			for i, l := range layers {
+				arr[i] = schemaToDataviewLayer(l.(map[string]interface{}))
+			}
+
+			config.Layers = arr
+		}
 	}
 
 	return config
+}
+
+func schemaToDataviewLayer(schema map[string]interface{}) api.DataviewLayer {
+	el := api.DataviewLayer{
+		ID: schema["id"].(string),
+	}
+	if val, ok := schema["dataset"]; ok {
+		el.Dataset = val.(string)
+	}
+	return el
 }
 
 func resourceDataviewDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -277,6 +392,28 @@ func flattenDataviewConfiguration(config api.DataviewConfiguration) interface{} 
 	a["color"] = config.Color
 	a["color_ramp"] = config.ColorRamp
 	a["datasets"] = config.Datasets
+	a["max_zoom"] = config.MaxZoom
+	a["aggregation_operation"] = config.AggregationOperation
+	a["breaks"] = config.Breaks
+	a["intervals"] = config.Intervals
+
+	if config.Layers != nil {
+		layers := flattenDataviewLayer(config.Layers)
+		a["layers"] = layers
+
+	}
+	return a
+}
+
+func flattenDataviewLayer(layers []api.DataviewLayer) interface{} {
+
+	a := make([]map[string]interface{}, len(layers))
+	for i, l := range layers {
+		m := map[string]interface{}{}
+		m["id"] = l.ID
+		m["dataset"] = l.Dataset
+		a[i] = m
+	}
 
 	return a
 }
