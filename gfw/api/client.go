@@ -19,7 +19,7 @@ type GFWClient struct {
 // NewClient -
 func NewClient(host, token string) (*GFWClient, error) {
 	c := GFWClient{
-		HTTPClient: &http.Client{Timeout: 10 * time.Second},
+		HTTPClient: &http.Client{Timeout: 30 * time.Second},
 		// Default Hashicups URL
 		HostURL: host,
 	}

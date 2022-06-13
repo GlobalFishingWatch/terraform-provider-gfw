@@ -23,6 +23,10 @@ func resourceWorkspace() *schema.Resource {
 		UpdateContext: resourceWorkspaceUpdate,
 		DeleteContext: resourceWorkspaceDelete,
 		Schema: map[string]*schema.Schema{
+			"workspace_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -141,11 +145,12 @@ func resourceWorkspaceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	// Warning or errors can be collected in a slice type
 	c := m.(*api.GFWClient)
 	var diags diag.Diagnostics
-
+	id := d.Get("workspace_id").(string)
 	workspace, err := schemaToWorkspace(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	workspace.ID = id
 	workspaceCreated, err := c.CreateWorkspace(workspace)
 	if err != nil {
 		return diag.FromErr(err)

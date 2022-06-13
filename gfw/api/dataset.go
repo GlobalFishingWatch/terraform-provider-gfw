@@ -37,7 +37,7 @@ func (c *GFWClient) GetDataset(id string) (*Dataset, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(string(body))
 	dataset := Dataset{}
 	err = json.Unmarshal(body, &dataset)
 	if err != nil {

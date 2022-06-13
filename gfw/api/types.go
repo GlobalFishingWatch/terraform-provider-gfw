@@ -122,6 +122,7 @@ type DatasetConfiguration struct {
 	Latitude                string                     `json:"latitude,omitempty"`
 	Longitude               string                     `json:"longitude,omitempty"`
 	Timestamp               string                     `json:"timestamp,omitempty"`
+	NumBytes                int                        `json:"numBytes,omitempty"`
 }
 type RelatedDataset struct {
 	ID   string `json:"id"`
@@ -247,6 +248,7 @@ type Workspace struct {
 }
 
 type CreateWorkspace struct {
+	ID                string                       `json:"id,omitempty"`
 	Name              string                       `json:"name,omitempty"`
 	Description       string                       `json:"description,omitempty"`
 	Category          string                       `json:"category,omitempty"`

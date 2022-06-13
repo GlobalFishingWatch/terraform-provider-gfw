@@ -33,6 +33,7 @@ var DATASET_CATEGORIES []string = []string{
 }
 var DATASET_SUBCATEGORIES []string = []string{
 	"track",
+	"animal",
 	"loitering",
 	"presence",
 	"port_visit",
@@ -44,6 +45,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"salinity",
 	"chlorophyl",
 	"water-temperature",
+	"user",
 }
 var DATASET_UNITS []string = []string{
 	"unit",
@@ -55,6 +57,8 @@ var DATASET_UNITS []string = []string{
 	"PSU",
 	"ºC",
 	"detections",
+	"habitat suitability",
+	"NA",
 }
 var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
 var DATASET_CONFIGURATION_FORMATS []string = []string{"geojson"}
@@ -102,7 +106,7 @@ func resourceDataset() *schema.Resource {
 			},
 			"unit": {
 				Type:         schema.TypeString,
-				Required:     true,
+				Optional:     true,
 				ValidateFunc: validation.StringInSlice(DATASET_UNITS, false),
 			},
 			"category": {
@@ -511,6 +515,7 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		Latitude:          schema["latitude"].(string),
 		Longitude:         schema["longitude"].(string),
 		Timestamp:         schema["timestamp"].(string),
+		NumBytes:          schema["num_bytes"].(int),
 	}
 	if val, ok := schema["max_zoom"]; ok {
 		maxZoom := val.(int)
@@ -632,6 +637,7 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["index"] = config.Index
 	a["version"] = config.Version
 	a["translate"] = config.Translate
+	a["num_bytes"] = config.NumBytes
 	if config.Documentation != nil {
 		a["documentation"] = []interface{}{flattenDatasetDocumentation(*config.Documentation)}
 	}

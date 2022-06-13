@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/utils"
+	"github.com/iancoleman/strcase"
 )
 
 const WORKSPACE_PATH = "workspaces"
@@ -88,9 +88,12 @@ func (c *GFWClient) UpdateWorkspace(id string, workspace CreateWorkspace) error 
 }
 
 func (c *GFWClient) CreateWorkspace(workspace CreateWorkspace) (*Workspace, error) {
-	id := utils.ToSnakeCase(workspace.Name)
-	if workspace.Public {
-		id = fmt.Sprintf("%s-public", id)
+	id := workspace.ID
+	if id == "" {
+		id = strcase.ToSnake(workspace.Name)
+		if workspace.Public {
+			id = fmt.Sprintf("%s-public", id)
+		}
 	}
 	exists, err := c.checkExistWorkspace(id)
 	if err != nil {
