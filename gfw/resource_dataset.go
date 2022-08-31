@@ -422,6 +422,7 @@ func resourceDatasetCreate(ctx context.Context, d *schema.ResourceData, m interf
 	}
 	d.SetId(datasetCreated.ID)
 	resourceDatasetRead(ctx, d, m)
+
 	return diags
 }
 
@@ -441,7 +442,9 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("type", dataset.Type)
 	d.Set("alias", dataset.Alias)
 	d.Set("start_date", dataset.StartDate)
-	d.Set("end_date", dataset.EndDate)
+	if d.Get("end_date") != nil && d.Get("end_date").(string) != "" {
+		d.Set("end_date", dataset.EndDate)
+	}
 	d.Set("unit", dataset.Unit)
 	d.Set("category", dataset.Category)
 	d.Set("subcategory", dataset.Subcategory)
