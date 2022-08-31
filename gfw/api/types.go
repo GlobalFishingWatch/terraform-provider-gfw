@@ -123,6 +123,17 @@ type DatasetConfiguration struct {
 	Longitude               string                     `json:"longitude,omitempty"`
 	Timestamp               string                     `json:"timestamp,omitempty"`
 	NumBytes                int                        `json:"numBytes,omitempty"`
+	ID                      string                     `json:"id"`
+	TTL                     int                        `json:"ttl"`
+	GcsFolder               string                     `json:"gcsFolder"`
+	EmailGroups             []string                   `json:"emailGroups"`
+	DisableInteraction      bool                       `json:"disableInteraction"`
+	Images                  []string                   `json:"images"`
+	Band                    string                     `json:"band"`
+	Min                     float64                    `json:"min"`
+	Max                     float64                    `json:"max"`
+	Scale                   float64                    `json:"scale"`
+	Offset                  float64                    `json:"offset"`
 }
 type RelatedDataset struct {
 	ID   string `json:"id"`

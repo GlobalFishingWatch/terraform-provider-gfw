@@ -10,7 +10,7 @@ import (
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/utils"
 )
 
-const ROLE_PATH = "roles"
+const ROLE_PATH = "auth/roles"
 
 func (c *GFWClient) GetRoles() (*[]Role, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, ROLE_PATH), nil)

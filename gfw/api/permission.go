@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const PERMISSION_PATH = "permissions"
+const PERMISSION_PATH = "auth/permissions"
 
 func (c *GFWClient) GetPermissions() (*[]Permission, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, PERMISSION_PATH), nil)

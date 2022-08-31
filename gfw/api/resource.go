@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const RESOURCE_PATH = "resources"
+const RESOURCE_PATH = "auth/resources"
 
 func (c *GFWClient) GetResources() (*[]Resource, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, RESOURCE_PATH), nil)

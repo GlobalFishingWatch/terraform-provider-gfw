@@ -10,7 +10,7 @@ import (
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/utils"
 )
 
-const USER_GROUP_PATH = "user-groups"
+const USER_GROUP_PATH = "auth/user-groups"
 
 func (c *GFWClient) GetUserGroups() (*[]UserGroup, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, USER_GROUP_PATH), nil)
@@ -69,6 +69,20 @@ func (c *GFWClient) DeleteUserGroup(id string) (*UserGroup, error) {
 	}
 
 	return &action, nil
+}
+
+func (c *GFWClient) UpdateUserGroup(id string, userGroup CreateUserGroup) error {
+	bodyReq, err := json.Marshal(userGroup)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s/%s", c.HostURL, USER_GROUP_PATH, id), strings.NewReader(string(bodyReq)))
+	req.Header.Add("content-type", "application/json")
+	if err != nil {
+		return err
+	}
+	_, err = c.doRequest(req)
+	return err
 }
 
 func (c *GFWClient) CreateUserGroup(action CreateUserGroup) (*UserGroup, error) {

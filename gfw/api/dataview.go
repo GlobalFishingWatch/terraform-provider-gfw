@@ -74,7 +74,7 @@ func (c *GFWClient) UpdateDataview(id string, dataview CreateDataview) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("body", string(bodyReq))
+
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s/%s", c.HostURL, DATAVIEW_PATH, id), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
@@ -98,7 +98,6 @@ func (c *GFWClient) CreateDataview(dataview CreateDataview) (*Dataview, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(string(bodyReq))
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", c.HostURL, DATAVIEW_PATH), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {

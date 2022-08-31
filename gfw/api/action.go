@@ -7,9 +7,10 @@ import (
 	"strings"
 )
 
-const ACTION_PATH = "actions"
+const ACTION_PATH = "auth/actions"
 
 func (c *GFWClient) GetActions() (*[]Action, error) {
+	fmt.Println("url", fmt.Sprintf("%s/%s", c.HostURL, ACTION_PATH))
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, ACTION_PATH), nil)
 	if err != nil {
 		return nil, err
@@ -20,6 +21,7 @@ func (c *GFWClient) GetActions() (*[]Action, error) {
 	}
 
 	actions := []Action{}
+	fmt.Println(string(body))
 	err = json.Unmarshal(body, &actions)
 	if err != nil {
 		return nil, err

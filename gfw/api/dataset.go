@@ -37,7 +37,6 @@ func (c *GFWClient) GetDataset(id string) (*Dataset, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(string(body))
 	dataset := Dataset{}
 	err = json.Unmarshal(body, &dataset)
 	if err != nil {
@@ -74,7 +73,7 @@ func (c *GFWClient) UpdateDataset(id string, dataset CreateDataset) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s/%s", c.HostURL, DATASET_PATH, id), strings.NewReader(string(bodyReq)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s/%s", c.HostURL, DATASET_PATH, id), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
 		return err
@@ -97,7 +96,6 @@ func (c *GFWClient) CreateDataset(dataset CreateDataset) (*Dataset, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("body", string(bodyReq))
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", c.HostURL, DATASET_PATH), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {

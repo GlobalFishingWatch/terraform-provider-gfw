@@ -301,17 +301,17 @@ func schemaToDataview(d *schema.ResourceData) (api.CreateDataview, error) {
 		}
 		dataview.InfoConfig = &obj
 	}
-	if d.HasChange("filtersConfig") && d.Get("filtersConfig") != nil {
+	if d.HasChange("filters_config") && d.Get("filters_config") != nil {
 		var obj map[string]interface{}
-		err := json.Unmarshal([]byte(d.Get("filtersConfig").(string)), &obj)
+		err := json.Unmarshal([]byte(d.Get("filters_config").(string)), &obj)
 		if err != nil {
 			return api.CreateDataview{}, err
 		}
 		dataview.FiltersConfig = &obj
 	}
-	if d.HasChange("eventsConfig") && d.Get("eventsConfig") != nil {
+	if d.HasChange("events_config") && d.Get("events_config") != nil {
 		var obj map[string]interface{}
-		err := json.Unmarshal([]byte(d.Get("eventsConfig").(string)), &obj)
+		err := json.Unmarshal([]byte(d.Get("events_config").(string)), &obj)
 		if err != nil {
 			return api.CreateDataview{}, err
 		}

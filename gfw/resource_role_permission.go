@@ -2,7 +2,6 @@ package gfw
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/api"
@@ -41,7 +40,6 @@ func resourceRolePermissionsCreate(ctx context.Context, d *schema.ResourceData, 
 
 	roleId := d.Get("role").(int)
 	permissionIds := utils.ConvertIntSet(d.Get("permissions").(*schema.Set))
-	fmt.Println(roleId, permissionIds)
 
 	err := c.CreateRolePermissions(api.CreateRolePermissions{
 		RoleID:      roleId,

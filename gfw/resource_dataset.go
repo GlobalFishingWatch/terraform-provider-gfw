@@ -30,6 +30,7 @@ var DATASET_CATEGORIES []string = []string{
 	"environment",
 	"event",
 	"vessel",
+	"gap",
 }
 var DATASET_SUBCATEGORIES []string = []string{
 	"track",
@@ -42,6 +43,8 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"viirs",
 	"sar",
 	"encounter",
+	"gap",
+	"gap_start",
 	"salinity",
 	"chlorophyl",
 	"water-temperature",
@@ -105,9 +108,8 @@ func resourceDataset() *schema.Resource {
 				ValidateFunc: utils.IsISOTime,
 			},
 			"unit": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringInSlice(DATASET_UNITS, false),
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"category": {
 				Type:         schema.TypeString,
@@ -329,6 +331,56 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ttl": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"gcs_folder": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"email_groups": {
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
+						"disable_interaction": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"images": {
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
+						"band": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"min": {
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
+						"max": {
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
+						"scale": {
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
+						"offset": {
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
 					},
 				},
 			},
@@ -516,10 +568,22 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		Longitude:         schema["longitude"].(string),
 		Timestamp:         schema["timestamp"].(string),
 		NumBytes:          schema["num_bytes"].(int),
+		Offset:            schema["offset"].(float64),
+		Scale:             schema["scale"].(float64),
+		Min:               schema["min"].(float64),
+		Max:               schema["max"].(float64),
+		Band:              schema["band"].(string),
+		GcsFolder:         schema["gcs_folder"].(string),
+		TTL:               schema["ttl"].(int),
+		ID:                schema["id"].(string),
 	}
 	if val, ok := schema["max_zoom"]; ok {
 		maxZoom := val.(int)
 		config.MaxZoom = maxZoom
+	}
+	if val, ok := schema["disable_interaction"]; ok {
+		disableInteraction := val.(bool)
+		config.DisableInteraction = disableInteraction
 	}
 	if val, ok := schema["translate"]; ok {
 		translate := val.(bool)
@@ -532,6 +596,15 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 	if val, ok := schema["version"]; ok {
 		version := val.(int)
 		config.Version = version
+	}
+	if val, ok := schema["images"]; ok {
+		config.Images = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+		if len(config.Images) == 0 {
+			config.Images = nil
+		}
+	}
+	if val, ok := schema["emailGroups"]; ok {
+		config.EmailGroups = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
 	}
 	if val, ok := schema["api_supported_versions"]; ok {
 		config.ApiSupportedVersions = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
@@ -653,6 +726,18 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["latitude"] = config.Latitude
 	a["longitude"] = config.Longitude
 	a["timestamp"] = config.Timestamp
+
+	a["id"] = config.ID
+	a["ttl"] = config.TTL
+	a["gcs_folder"] = config.GcsFolder
+	a["email_groups"] = config.EmailGroups
+	a["disable_interaction"] = config.DisableInteraction
+	a["images"] = config.Images
+	a["band"] = config.Band
+	a["min"] = config.Min
+	a["max"] = config.Max
+	a["offset"] = config.Offset
+	a["scale"] = config.Scale
 
 	return a
 }

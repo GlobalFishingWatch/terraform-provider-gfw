@@ -79,6 +79,20 @@ func resourceUserGroupRead(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 func resourceUserGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	name := d.Get("name").(string)
+	description := d.Get("description").(string)
+	defaultV := d.Get("default").(bool)
+
+	userGroupID := d.Id()
+	c := m.(*api.GFWClient)
+	err := c.UpdateUserGroup(userGroupID, api.CreateUserGroup{
+		Name:        name,
+		Description: description,
+		Default:     defaultV,
+	})
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return resourceUserGroupRead(ctx, d, m)
 }
 
