@@ -63,6 +63,12 @@ var DATASET_UNITS []string = []string{
 	"habitat suitability",
 	"NA",
 }
+var DATASET_STATUSES []string = []string{
+	"done",
+	"error",
+	"importing",
+	"deprecated",
+}
 var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
 var DATASET_CONFIGURATION_FORMATS []string = []string{"geojson"}
 
@@ -124,6 +130,11 @@ func resourceDataset() *schema.Resource {
 			"source": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"status": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice(DATASET_STATUSES, false),
 			},
 			"related_datasets": {
 				Type:     schema.TypeList,
@@ -448,6 +459,7 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("unit", dataset.Unit)
 	d.Set("category", dataset.Category)
 	d.Set("subcategory", dataset.Subcategory)
+	d.Set("status", dataset.Status)
 	d.Set("source", dataset.Source)
 	d.Set("fields_allowed", dataset.FieldsAllowed)
 	d.Set("type", dataset.Type)
@@ -510,6 +522,9 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 	}
 	if d.HasChange("subcategory") {
 		dataset.Subcategory = d.Get("subcategory").(string)
+	}
+	if d.HasChange("status") {
+		dataset.Status = d.Get("status").(string)
 	}
 	if d.HasChange("source") {
 		dataset.Source = d.Get("source").(string)
