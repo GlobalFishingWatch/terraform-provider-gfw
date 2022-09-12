@@ -459,7 +459,9 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("unit", dataset.Unit)
 	d.Set("category", dataset.Category)
 	d.Set("subcategory", dataset.Subcategory)
-	d.Set("status", dataset.Status)
+	if d.Get("status") != nil && d.Get("status").(string) != "" {
+		d.Set("status", dataset.Status)
+	}
 	d.Set("source", dataset.Source)
 	d.Set("fields_allowed", dataset.FieldsAllowed)
 	d.Set("type", dataset.Type)
@@ -505,43 +507,33 @@ func resourceDatasetUpdate(ctx context.Context, d *schema.ResourceData, m interf
 
 func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 	dataset := api.CreateDataset{}
-	if d.HasChange("name") {
-		dataset.Name = d.Get("name").(string)
-	}
-	if d.HasChange("description") {
-		dataset.Description = d.Get("description").(string)
-	}
-	if d.HasChange("type") {
-		dataset.Type = d.Get("type").(string)
-	}
-	if d.HasChange("unit") {
-		dataset.Unit = d.Get("unit").(string)
-	}
-	if d.HasChange("category") {
-		dataset.Category = d.Get("category").(string)
-	}
-	if d.HasChange("subcategory") {
-		dataset.Subcategory = d.Get("subcategory").(string)
-	}
-	if d.HasChange("status") {
-		dataset.Status = d.Get("status").(string)
-	}
-	if d.HasChange("source") {
-		dataset.Source = d.Get("source").(string)
-	}
-	if d.HasChange("start_date") {
-		dataset.StartDate = d.Get("start_date").(string)
-	}
-	if d.HasChange("end_date") {
-		dataset.EndDate = d.Get("end_date").(string)
-	}
-	if d.HasChange("alias") && d.Get("alias") != nil {
+	dataset.Name = d.Get("name").(string)
+
+	dataset.Description = d.Get("description").(string)
+
+	dataset.Type = d.Get("type").(string)
+
+	dataset.Unit = d.Get("unit").(string)
+
+	dataset.Category = d.Get("category").(string)
+
+	dataset.Subcategory = d.Get("subcategory").(string)
+
+	dataset.Status = d.Get("status").(string)
+
+	dataset.Source = d.Get("source").(string)
+
+	dataset.StartDate = d.Get("start_date").(string)
+
+	dataset.EndDate = d.Get("end_date").(string)
+
+	if d.Get("alias") != nil {
 		dataset.Alias = utils.ConvertArrayInterfaceToArrayString(d.Get("alias").([]interface{}))
 	}
-	if d.HasChange("fields_allowed") && d.Get("fields_allowed") != nil {
+	if d.Get("fields_allowed") != nil {
 		dataset.FieldsAllowed = utils.ConvertArrayInterfaceToArrayString(d.Get("fields_allowed").([]interface{}))
 	}
-	if d.HasChange("schema") && d.Get("schema") != nil {
+	if d.Get("schema") != nil && d.Get("schema").(string) != "" {
 		var obj map[string]interface{}
 		err := json.Unmarshal([]byte(d.Get("schema").(string)), &obj)
 		if err != nil {
@@ -549,14 +541,14 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 		}
 		dataset.Schema = &obj
 	}
-	if d.HasChange("configuration") && d.Get("configuration") != nil {
+	if d.Get("configuration") != nil {
 		configuration := d.Get("configuration").([]interface{})
 		if len(configuration) > 0 {
 			config := schemaToDatasetConfiguration(configuration[0].(map[string]interface{}))
 			dataset.Configuration = &config
 		}
 	}
-	if d.HasChange("related_datasets") && d.Get("related_datasets") != nil {
+	if d.Get("related_datasets") != nil {
 		relatedDatasets := schemaToRelatedDatasets(d.Get("related_datasets").([]interface{}))
 		dataset.RelatedDatasets = relatedDatasets
 	}
