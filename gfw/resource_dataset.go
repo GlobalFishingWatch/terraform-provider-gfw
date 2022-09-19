@@ -26,7 +26,7 @@ var DATASET_CATEGORIES []string = []string{
 	"activity",
 	"context",
 	"context-layer",
-	"detection",
+	"detections",
 	"environment",
 	"event",
 	"vessel",
