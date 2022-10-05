@@ -117,7 +117,7 @@ func resourceWorkspace() *schema.Resource {
 							ValidateFunc: validation.StringIsJSON,
 						},
 						"dataview_id": {
-							Type:     schema.TypeInt,
+							Type:     schema.TypeString,
 							Required: true,
 						},
 						"datasets_config": {
@@ -179,13 +179,6 @@ func resourceWorkspaceRead(ctx context.Context, d *schema.ResourceData, m interf
 	d.Set("end_at", workspace.EndAt)
 	d.Set("category", workspace.Category)
 	d.Set("aoi", workspace.Aoi)
-	if len(workspace.Dataviews) > 0 {
-		list := make([]int, len(workspace.Dataviews))
-		for i, n := range workspace.Dataviews {
-			list[i] = n.ID
-		}
-		d.Set("dataviews", list)
-	}
 
 	if workspace.Viewport != nil {
 		configuration := flattenWorkspaceViewport(*workspace.Viewport)
@@ -306,7 +299,7 @@ func schemaToWorkspaceDataviewInstances(schema []interface{}) ([]api.WorkspaceDa
 		list[i] = api.WorkspaceDataviewInstance{
 			ID:         mp["id"].(string),
 			Category:   mp["category"].(string),
-			DataviewID: mp["dataview_id"].(int),
+			DataviewID: mp["dataview_id"].(string),
 		}
 		if mp["config"].(string) != "" {
 			var obj map[string]interface{}
