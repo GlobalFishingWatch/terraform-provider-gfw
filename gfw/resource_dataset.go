@@ -578,19 +578,25 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		Latitude:          schema["latitude"].(string),
 		Longitude:         schema["longitude"].(string),
 		Timestamp:         schema["timestamp"].(string),
-		NumBytes:          schema["num_bytes"].(int),
 		Offset:            schema["offset"].(float64),
 		Scale:             schema["scale"].(float64),
 		Min:               schema["min"].(float64),
 		Max:               schema["max"].(float64),
 		Band:              schema["band"].(string),
 		GcsFolder:         schema["gcs_folder"].(string),
-		TTL:               schema["ttl"].(int),
 		ID:                schema["id"].(string),
 	}
 	if val, ok := schema["max_zoom"]; ok {
 		maxZoom := val.(int)
 		config.MaxZoom = maxZoom
+	}
+	if val, ok := schema["num_bytes"]; ok {
+		numBytes := val.(int)
+		config.NumBytes = numBytes
+	}
+	if val, ok := schema["ttl"]; ok {
+		ttl := val.(int)
+		config.TTL = ttl
 	}
 	if val, ok := schema["disable_interaction"]; ok {
 		disableInteraction := val.(bool)

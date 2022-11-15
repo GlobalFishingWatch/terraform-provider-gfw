@@ -183,31 +183,31 @@ type DataviewLayer struct {
 	Dataset string `json:"dataset"`
 }
 type DataviewConfiguration struct {
-	Type                 string          `json:"type"`
-	Color                string          `json:"color"`
-	Datasets             []string        `json:"datasets"`
-	ColorRamp            string          `json:"colorRamp"`
-	MaxZoom              int             `json:"maxZoom"`
-	AggregationOperation string          `json:"aggregationOperation"`
-	Layers               []DataviewLayer `json:"layers"`
-	Breaks               []float64       `json:"breaks"`
-	Intervals            []string        `json:"intervals"`
+	Type                 string          `json:"type,omitempty"`
+	Color                string          `json:"color,omitempty"`
+	Datasets             []string        `json:"datasets,omitempty"`
+	ColorRamp            string          `json:"colorRamp,omitempty"`
+	MaxZoom              int             `json:"maxZoom,omitempty"`
+	AggregationOperation string          `json:"aggregationOperation,omitempty"`
+	Layers               []DataviewLayer `json:"layers,omitempty"`
+	Breaks               []float64       `json:"breaks,omitempty"`
+	Intervals            []string        `json:"intervals,omitempty"`
 }
 
 type Dataview struct {
-	ID             int                       `json:"id"`
-	Name           string                    `json:"name"`
-	Slug           string                    `json:"slug"`
-	Description    string                    `json:"description"`
-	Category       string                    `json:"category"`
-	App            string                    `json:"app"`
-	CreatedAt      string                    `json:"createdAt"`
-	UpdatedAt      string                    `json:"updatedAt"`
-	Config         *DataviewConfiguration    `json:"config"`
-	InfoConfig     *map[string]interface{}   `json:"infoConfig"`
-	EventsConfig   *map[string]interface{}   `json:"eventsConfig"`
-	FiltersConfig  *map[string]interface{}   `json:"filtersConfig"`
-	DatasetsConfig *[]map[string]interface{} `json:"datasetsConfig"`
+	ID             int                       `json:"id,omitempty"`
+	Name           string                    `json:"name,omitempty"`
+	Slug           string                    `json:"slug,omitempty"`
+	Description    string                    `json:"description,omitempty"`
+	Category       string                    `json:"category,omitempty"`
+	App            string                    `json:"app,omitempty"`
+	CreatedAt      string                    `json:"createdAt,omitempty"`
+	UpdatedAt      string                    `json:"updatedAt,omitempty"`
+	Config         *DataviewConfiguration    `json:"config,omitempty"`
+	InfoConfig     *map[string]interface{}   `json:"infoConfig,omitempty"`
+	EventsConfig   *map[string]interface{}   `json:"eventsConfig,omitempty"`
+	FiltersConfig  *map[string]interface{}   `json:"filtersConfig,omitempty"`
+	DatasetsConfig *[]map[string]interface{} `json:"datasetsConfig,omitempty"`
 }
 
 type CreateDataview struct {

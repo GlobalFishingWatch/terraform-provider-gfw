@@ -343,8 +343,10 @@ func schemaToDataviewConfiguration(schema map[string]interface{}) api.DataviewCo
 		Datasets:             utils.ConvertArrayInterfaceToArrayString(schema["datasets"].([]interface{})),
 		Intervals:            utils.ConvertArrayInterfaceToArrayString(schema["intervals"].([]interface{})),
 		Breaks:               utils.ConvertArrayInterfaceToArrayFloat(schema["breaks"].([]interface{})),
-		MaxZoom:              schema["max_zoom"].(int),
 		AggregationOperation: schema["aggregation_operation"].(string),
+	}
+	if val, ok := schema["max_zoom"]; ok {
+		config.MaxZoom = val.(int)
 	}
 	if val, ok := schema["layers"]; ok {
 		layers := val.([]interface{})
