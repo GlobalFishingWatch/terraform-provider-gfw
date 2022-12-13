@@ -29,6 +29,7 @@ var DATAVIEW_CONFIG_TYPES []string = []string{
 	"USER_POINTS",
 	"VESSEL_EVENTS",
 	"VESSEL_EVENTS_SHAPES",
+	"BASEMAP_LABELS",
 }
 
 func resourceDataview() *schema.Resource {
