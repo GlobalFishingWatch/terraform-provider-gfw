@@ -658,9 +658,10 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 
 func schemaToDatasetConfigurationRange(schema map[string]interface{}) api.DatasetConfigurationRange {
 	doc := api.DatasetConfigurationRange{
-		Min: schema["type"].(float64),
-		Max: schema["enable"].(float64),
+		Min: schema["min"].(float64),
+		Max: schema["max"].(float64),
 	}
+
 	return doc
 }
 func schemaToDatasetDocumentation(schema map[string]interface{}) api.DatasetDocumentation {
