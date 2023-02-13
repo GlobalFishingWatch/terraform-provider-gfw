@@ -19,6 +19,7 @@ var DATASET_TYPES []string = []string{
 	"4wings:v1",
 	"user-tracks:v1",
 	"user-context-layer:v1",
+	"context-layer:v1",
 	"data-download:v1",
 	"temporal-context-layer:v1",
 }
@@ -393,6 +394,17 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeFloat,
 							Optional: true,
 						},
+						"id_property": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"value_properties": {
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
 					},
 				},
 			},
@@ -579,6 +591,7 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		Longitude:         schema["longitude"].(string),
 		Timestamp:         schema["timestamp"].(string),
 		Offset:            schema["offset"].(float64),
+		IDProperty:        schema["id_property"].(string),
 		Scale:             schema["scale"].(float64),
 		Min:               schema["min"].(float64),
 		Max:               schema["max"].(float64),
@@ -620,7 +633,13 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 			config.Images = nil
 		}
 	}
-	if val, ok := schema["emailGroups"]; ok {
+	if val, ok := schema["value_properties"]; ok {
+		config.ValueProperties = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+		if len(config.ValueProperties) == 0 {
+			config.ValueProperties = nil
+		}
+	}
+	if val, ok := schema["email_groups"]; ok {
 		config.EmailGroups = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
 	}
 	if val, ok := schema["api_supported_versions"]; ok {
@@ -756,6 +775,8 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["max"] = config.Max
 	a["offset"] = config.Offset
 	a["scale"] = config.Scale
+	a["value_properties"] = config.ValueProperties
+	a["id_property"] = config.IDProperty
 
 	return a
 }

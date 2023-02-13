@@ -134,6 +134,8 @@ type DatasetConfiguration struct {
 	Max                     float64                    `json:"max"`
 	Scale                   float64                    `json:"scale"`
 	Offset                  float64                    `json:"offset"`
+	IDProperty              string                     `json:"idProperty"`
+	ValueProperties         []string                   `json:"valueProperties"`
 }
 type RelatedDataset struct {
 	ID   string `json:"id"`
