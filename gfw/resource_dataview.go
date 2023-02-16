@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"strconv"
+	"time"
 
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/api"
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/utils"
@@ -163,6 +164,12 @@ func resourceDataview() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+		},
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(5 * time.Minute),
+			Update: schema.DefaultTimeout(5 * time.Minute),
+			Delete: schema.DefaultTimeout(5 * time.Minute),
+			Read:   schema.DefaultTimeout(5 * time.Minute),
 		},
 	}
 }

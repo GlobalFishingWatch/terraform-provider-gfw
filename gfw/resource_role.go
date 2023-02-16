@@ -3,6 +3,7 @@ package gfw
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/api"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -30,6 +31,12 @@ func resourceRole() *schema.Resource {
 				Optional: true,
 				Required: false,
 			},
+		},
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(5 * time.Minute),
+			Update: schema.DefaultTimeout(5 * time.Minute),
+			Delete: schema.DefaultTimeout(5 * time.Minute),
+			Read:   schema.DefaultTimeout(5 * time.Minute),
 		},
 	}
 }
