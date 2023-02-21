@@ -56,10 +56,15 @@ func (c *GFWClient) doRequest(req *http.Request) ([]byte, error) {
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
+		fmt.Println(string(body))
 		return nil, err
 	}
-
-	if res.StatusCode >= 300 {
+	if res.StatusCode >= 500 {
+		if err != nil {
+			return nil, err
+		}
+	}
+	if res.StatusCode >= 300 && res.StatusCode < 500 {
 		appError := AppError{}
 		err = json.Unmarshal(body, &appError)
 		if err != nil {
