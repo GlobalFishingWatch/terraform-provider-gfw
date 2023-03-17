@@ -295,13 +295,16 @@ func resourceDataset() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"id": {
-										Type: schema.TypeString,
+										Type:     schema.TypeString,
+										Required: true,
 									},
 									"type": {
-										Type: schema.TypeString,
+										Type:     schema.TypeString,
+										Required: true,
 									},
 									"insight": {
-										Type: schema.TypeString,
+										Type:     schema.TypeString,
+										Required: true,
 									},
 								},
 							},
