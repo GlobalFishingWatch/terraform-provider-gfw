@@ -16,6 +16,7 @@ var DATASET_TYPES []string = []string{
 	"tracks:v1",
 	"vessels:v1",
 	"events:v1",
+	"insights:v1",
 	"ports:v1",
 	"4wings:v1",
 	"user-tracks:v1",
@@ -42,6 +43,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"port_visit",
 	"fishing",
 	"info",
+	"insight",
 	"viirs",
 	"sar",
 	"encounter",
@@ -283,6 +285,26 @@ func resourceDataset() *schema.Resource {
 									"provider": {
 										Type:     schema.TypeString,
 										Optional: true,
+									},
+								},
+							},
+						},
+						"insight_sources": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"id": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"type": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"insight": {
+										Type:     schema.TypeString,
+										Required: true,
 									},
 								},
 							},
@@ -671,6 +693,16 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 			config.Documentation = &doc
 		}
 	}
+	if val, ok := schema["insight_sources"]; ok {
+		insightSourcesArray := val.([]interface{})
+		if len(insightSourcesArray) > 0 {
+			array := make([]api.InsightSources, len(insightSourcesArray))
+			for i, source := range insightSourcesArray {
+				array[i] = schemaToDatasetInsightSource(source.(map[string]interface{}))
+			}
+			config.InsightSources = array
+		}
+	}
 	if val, ok := schema["property_to_include_range"]; ok {
 		propertyToIncludeRangeArray := val.([]interface{})
 		if len(propertyToIncludeRangeArray) > 0 {
@@ -680,6 +712,16 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 	}
 
 	return config
+}
+
+func schemaToDatasetInsightSource(schema map[string]interface{}) api.InsightSources {
+	doc := api.InsightSources{
+		ID:      schema["id"].(string),
+		Type:    schema["type"].(string),
+		Insight: schema["insight"].(string),
+	}
+
+	return doc
 }
 
 func schemaToDatasetConfigurationRange(schema map[string]interface{}) api.DatasetConfigurationRange {
@@ -758,6 +800,9 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	if config.Documentation != nil {
 		a["documentation"] = []interface{}{flattenDatasetDocumentation(*config.Documentation)}
 	}
+	if config.InsightSources != nil {
+		a["insight_sources"] = flattenDatasetInsightSources(config.InsightSources)
+	}
 	a["fields"] = config.Fields
 	a["geometry_type"] = config.GeometryType
 	a["property_to_include"] = config.PropertyToInclude
@@ -810,6 +855,23 @@ func flattenDatasetDocumentation(doc api.DatasetDocumentation) interface{} {
 	a["provider"] = doc.Provider
 
 	return a
+}
+
+func flattenDatasetInsightSources(docs []api.InsightSources) interface{} {
+
+	array := make([]map[string]interface{}, len(docs))
+
+	for i, doc := range docs {
+		a := make(map[string]interface{})
+
+		a["id"] = doc.ID
+		a["type"] = doc.Type
+		a["insight"] = doc.Insight
+
+		array[i] = a
+	}
+
+	return array
 }
 
 func flattenDatasetConfigurationRange(r api.DatasetConfigurationRange) interface{} {

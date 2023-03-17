@@ -87,6 +87,13 @@ type DatasetDocumentation struct {
 	Queries  []string `json:"queries,omitempty"`
 	Provider string   `json:"provider,omitempty"`
 }
+
+type InsightSources struct {
+	ID      string `json:"id,omitempty"`
+	Type    string `json:"type,omitempty"`
+	Insight string `json:"insight,omitempty"`
+}
+
 type DatasetConfigurationRange struct {
 	Min float64 `json:"min,omitempty"`
 	Max float64 `json:"max,omitempty"`
@@ -136,6 +143,7 @@ type DatasetConfiguration struct {
 	Offset                  float64                    `json:"offset"`
 	IDProperty              string                     `json:"idProperty"`
 	ValueProperties         []string                   `json:"valueProperties"`
+	InsightSources          []InsightSources           `json:"insightSources,omitempty"`
 }
 type RelatedDataset struct {
 	ID   string `json:"id"`

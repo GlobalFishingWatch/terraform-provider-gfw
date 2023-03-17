@@ -42,3 +42,6 @@ vendor
 keys
 
 .vscode/
+.idea/
+
+__debug_bin
