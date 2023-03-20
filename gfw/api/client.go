@@ -62,6 +62,8 @@ func (c *GFWClient) doRequest(req *http.Request) ([]byte, error) {
 	if res.StatusCode >= 500 {
 		if err != nil {
 			return nil, err
+		} else {
+			return nil, fmt.Errorf("Error %d: %s", res.StatusCode, string(body))
 		}
 	}
 	if res.StatusCode >= 300 && res.StatusCode < 500 {
