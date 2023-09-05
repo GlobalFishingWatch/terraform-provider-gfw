@@ -611,6 +611,7 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		Bucket:            schema["bucket"].(string),
 		Folder:            schema["folder"].(string),
 		Index:             schema["index"].(string),
+		IndexBoost:        schema["indexBoost"].(float64),
 		GeometryType:      schema["geometry_type"].(string),
 		PropertyToInclude: schema["property_to_include"].(string),
 		FilePath:          schema["file_path"].(string),
@@ -794,6 +795,7 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["intervals"] = config.Intervals
 	a["num_layers"] = config.NumLayers
 	a["index"] = config.Index
+	a["indexBoost"] = config.IndexBoost
 	a["version"] = config.Version
 	a["translate"] = config.Translate
 	a["num_bytes"] = config.NumBytes

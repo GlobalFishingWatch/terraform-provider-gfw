@@ -116,6 +116,7 @@ type DatasetConfiguration struct {
 	Intervals               []string                   `json:"intervals,omitempty"`
 	NumLayers               int                        `json:"numLayers,omitempty"`
 	Index                   string                     `json:"index,omitempty"`
+	IndexBoost              float64                    `json:"indexBoost,omitempty"`
 	Version                 int                        `json:"version,omitempty"`
 	Translate               bool                       `json:"translate,omitempty"`
 	Documentation           *DatasetDocumentation      `json:"documentation,omitempty"`
