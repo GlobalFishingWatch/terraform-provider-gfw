@@ -249,7 +249,7 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"indexBoost": {
+						"index_boost": {
                         	Type:     schema.TypeFloat,
                         	Optional: true,
                         },
