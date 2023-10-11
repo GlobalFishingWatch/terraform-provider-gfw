@@ -15,7 +15,7 @@ import (
 
 var DATAVIEW_TYPES []string = []string{"context", "environment", "activity", "detections", "events", "vessels"}
 var DATAVIEW_APPS []string = []string{"fishing-map", "vessel-history"}
-var DATAVIEW_CONFIG_INTERVALS []string = []string{"hours", "day", "10days", "month"}
+var DATAVIEW_CONFIG_INTERVALS []string = []string{"hours", "day", "10days", "month", "year", "HOURS", "DAY", "10DAYS", "MONTH", "YEAR"}
 var DATAVIEW_CONFIG_TYPES []string = []string{
 	"BASEMAP",
 	"HEATMAP",
