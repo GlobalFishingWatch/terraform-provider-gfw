@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/docker/distribution/configuration"
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/api"
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/utils"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -849,8 +848,8 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["value_properties"] = config.ValueProperties
 	a["id_property"] = config.IDProperty
 
-	if configuration.ConfigurationUI != nil {
-		jsonStr, err := json.Marshal(configuration.ConfigurationUI)
+	if config.ConfigurationUI != nil {
+		jsonStr, err := json.Marshal(config.ConfigurationUI)
 		if err != nil {
 			return diag.FromErr(err)
 		}
