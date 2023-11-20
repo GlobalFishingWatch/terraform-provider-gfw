@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/docker/distribution/configuration"
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/api"
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/utils"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -164,6 +165,11 @@ func resourceDataset() *schema.Resource {
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"configuration_ui": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringIsJSON,
+						},
 						"api_supported_versions": {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -250,9 +256,9 @@ func resourceDataset() *schema.Resource {
 							Optional: true,
 						},
 						"index_boost": {
-                        	Type:     schema.TypeFloat,
-                        	Optional: true,
-                        },
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
 						"version": {
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -716,6 +722,13 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		}
 	}
 
+	if val, ok := schema["configuration_ui"]; ok {
+		var obj map[string]interface{}
+		json.Unmarshal([]byte(val.(string)), &obj)
+
+		config.ConfigurationUI = &obj
+	}
+
 	return config
 }
 
@@ -835,6 +848,14 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["scale"] = config.Scale
 	a["value_properties"] = config.ValueProperties
 	a["id_property"] = config.IDProperty
+
+	if configuration.ConfigurationUI != nil {
+		jsonStr, err := json.Marshal(configuration.ConfigurationUI)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		a["configurationUI"] = string(jsonStr)
+	}
 
 	return a
 }
