@@ -53,6 +53,13 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"chlorophyl",
 	"water-temperature",
 	"user",
+	"nitrate",
+	"oxygen",
+	"phosphate",
+	"waves",
+	"oxygen",
+	"phosphate",
+	"waves",
 }
 var DATASET_UNITS []string = []string{
 	"unit",
