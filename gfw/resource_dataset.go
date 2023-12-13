@@ -57,9 +57,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"oxygen",
 	"phosphate",
 	"waves",
-	"oxygen",
-	"phosphate",
-	"waves",
+	"ph",
 }
 var DATASET_UNITS []string = []string{
 	"unit",
