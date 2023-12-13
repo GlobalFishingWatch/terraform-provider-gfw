@@ -145,7 +145,7 @@ type DatasetConfiguration struct {
 	IDProperty              string                     `json:"idProperty"`
 	ValueProperties         []string                   `json:"valueProperties"`
 	InsightSources          []InsightSources           `json:"insightSources,omitempty"`
-	ConfigurationUI         *map[string]interface{}    `json:"configurationUI"`
+	ConfigurationUI         *map[string]interface{}    `json:"configurationUI,omitempty"`
 }
 type RelatedDataset struct {
 	ID   string `json:"id"`
