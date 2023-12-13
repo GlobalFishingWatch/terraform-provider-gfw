@@ -858,7 +858,7 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		a["configurationUI"] = string(jsonStr)
+		a["configuration_ui"] = string(jsonStr)
 	}
 
 	return a
