@@ -142,6 +142,8 @@ type DatasetConfiguration struct {
 	Max                     float64                    `json:"max"`
 	Scale                   float64                    `json:"scale"`
 	Offset                  float64                    `json:"offset"`
+	TileScale               float64                    `json:"tileScale"`
+	TileOffset              float64                    `json:"tileOffset"`
 	IDProperty              string                     `json:"idProperty"`
 	ValueProperties         []string                   `json:"valueProperties"`
 	InsightSources          []InsightSources           `json:"insightSources,omitempty"`

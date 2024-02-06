@@ -431,6 +431,14 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeFloat,
 							Optional: true,
 						},
+						"tile_scale": {
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
+						"tile_offset": {
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
 						"id_property": {
 							Type:     schema.TypeString,
 							Optional: true,
@@ -635,8 +643,10 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		Longitude:         schema["longitude"].(string),
 		Timestamp:         schema["timestamp"].(string),
 		Offset:            schema["offset"].(float64),
+		TileOffset:        schema["tile_offset"].(float64),
 		IDProperty:        schema["id_property"].(string),
 		Scale:             schema["scale"].(float64),
+		TileScale:         schema["tile_scale"].(float64),
 		Min:               schema["min"].(float64),
 		Max:               schema["max"].(float64),
 		Band:              schema["band"].(string),
@@ -849,7 +859,9 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["min"] = config.Min
 	a["max"] = config.Max
 	a["offset"] = config.Offset
+	a["tile_offset"] = config.TileOffset
 	a["scale"] = config.Scale
+	a["tile_scale"] = config.Scale
 	a["value_properties"] = config.ValueProperties
 	a["id_property"] = config.IDProperty
 
