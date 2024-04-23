@@ -79,7 +79,7 @@ var DATASET_STATUSES []string = []string{
 	"deprecated",
 }
 var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
-var DATASET_CONFIGURATION_FORMATS []string = []string{"geojson"}
+var DATASET_CONFIGURATION_FORMATS []string = []string{"geojson", "pmtile"}
 
 func resourceDataset() *schema.Resource {
 	return &schema.Resource{
