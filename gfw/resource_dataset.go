@@ -465,6 +465,11 @@ func resourceDataset() *schema.Resource {
 				Optional:     true,
 				ValidateFunc: validation.StringIsJSON,
 			},
+			"filters": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsJSON,
+			},
 			"created_at": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -539,6 +544,15 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 			return diag.FromErr(err)
 		}
 	}
+	if dataset.Filters != nil {
+		jsonStr, err := json.Marshal(dataset.Filters)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		if err := d.Set("filters", string(jsonStr)); err != nil {
+			return diag.FromErr(err)
+		}
+	}
 
 	if dataset.Configuration != nil {
 		configuration := flattenDatasetConfiguration(*dataset.Configuration)
@@ -604,6 +618,14 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 			return api.CreateDataset{}, err
 		}
 		dataset.Schema = &obj
+	}
+	if d.Get("filters") != nil && d.Get("filters").(string) != "" {
+		var obj []map[string]interface{}
+		err := json.Unmarshal([]byte(d.Get("filters").(string)), &obj)
+		if err != nil {
+			return api.CreateDataset{}, err
+		}
+		dataset.Filters = obj
 	}
 	if d.Get("configuration") != nil {
 		configuration := d.Get("configuration").([]interface{})
