@@ -620,12 +620,12 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 		dataset.Schema = &obj
 	}
 	if d.Get("filters") != nil && d.Get("filters").(string) != "" {
-		var obj []map[string]interface{}
+		var obj map[string]interface{}
 		err := json.Unmarshal([]byte(d.Get("filters").(string)), &obj)
 		if err != nil {
 			return api.CreateDataset{}, err
 		}
-		dataset.Filters = obj
+		dataset.Filters = &obj
 	}
 	if d.Get("configuration") != nil {
 		configuration := d.Get("configuration").([]interface{})
