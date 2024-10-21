@@ -64,7 +64,6 @@ func resourceDataview() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringInSlice(DATAVIEW_APPS, false),
 			},
-
 			"datasets_config": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -152,6 +151,11 @@ func resourceDataview() *schema.Resource {
 						"color_ramp": {
 							Type:     schema.TypeString,
 							Optional: true,
+						},
+						"cluster_max_zoom_levels": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringIsJSON,
 						},
 					},
 				},
@@ -299,7 +303,10 @@ func schemaToDataview(d *schema.ResourceData) (api.CreateDataview, error) {
 	if d.HasChange("config") && d.Get("config") != nil {
 		configuration := d.Get("config").([]interface{})
 		if len(configuration) > 0 {
-			config := schemaToDataviewConfiguration(configuration[0].(map[string]interface{}))
+			config, err := schemaToDataviewConfiguration(configuration[0].(map[string]interface{}))
+			if err != nil {
+				return api.CreateDataview{}, err
+			}
 			dataview.Config = &config
 		}
 	}
@@ -345,7 +352,7 @@ func schemaToDataview(d *schema.ResourceData) (api.CreateDataview, error) {
 	return dataview, nil
 }
 
-func schemaToDataviewConfiguration(schema map[string]interface{}) api.DataviewConfiguration {
+func schemaToDataviewConfiguration(schema map[string]interface{}) (api.DataviewConfiguration, error) {
 	config := api.DataviewConfiguration{
 		Type:                 schema["type"].(string),
 		Color:                schema["color"].(string),
@@ -354,6 +361,14 @@ func schemaToDataviewConfiguration(schema map[string]interface{}) api.DataviewCo
 		Intervals:            utils.ConvertArrayInterfaceToArrayString(schema["intervals"].([]interface{})),
 		Breaks:               utils.ConvertArrayInterfaceToArrayFloat(schema["breaks"].([]interface{})),
 		AggregationOperation: schema["aggregation_operation"].(string),
+	}
+	if val, ok := schema["cluster_max_zoom_levels"]; ok {
+		var obj map[string]interface{}
+		err := json.Unmarshal([]byte(val.(string)), &obj)
+		if err != nil {
+			return api.DataviewConfiguration{}, err
+		}
+		config.ClusterMaxZoomLevels = &obj
 	}
 	if val, ok := schema["max_zoom"]; ok {
 		config.MaxZoom = val.(int)
@@ -370,7 +385,7 @@ func schemaToDataviewConfiguration(schema map[string]interface{}) api.DataviewCo
 		}
 	}
 
-	return config
+	return config, nil
 }
 
 func schemaToDataviewLayer(schema map[string]interface{}) api.DataviewLayer {
@@ -408,6 +423,14 @@ func flattenDataviewConfiguration(config api.DataviewConfiguration) interface{} 
 	a["aggregation_operation"] = config.AggregationOperation
 	a["breaks"] = config.Breaks
 	a["intervals"] = config.Intervals
+
+	if config.ClusterMaxZoomLevels != nil {
+		jsonStr, err := json.Marshal(config.ClusterMaxZoomLevels)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		a["cluster_max_zoom_levels"] = string(jsonStr)
+	}
 
 	if config.Layers != nil {
 		layers := flattenDataviewLayer(config.Layers)

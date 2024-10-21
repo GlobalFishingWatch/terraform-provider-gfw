@@ -198,16 +198,18 @@ type DataviewLayer struct {
 	ID      string `json:"id"`
 	Dataset string `json:"dataset"`
 }
+
 type DataviewConfiguration struct {
-	Type                 string          `json:"type,omitempty"`
-	Color                string          `json:"color,omitempty"`
-	Datasets             []string        `json:"datasets,omitempty"`
-	ColorRamp            string          `json:"colorRamp,omitempty"`
-	MaxZoom              int             `json:"maxZoom,omitempty"`
-	AggregationOperation string          `json:"aggregationOperation,omitempty"`
-	Layers               []DataviewLayer `json:"layers,omitempty"`
-	Breaks               []float64       `json:"breaks,omitempty"`
-	Intervals            []string        `json:"intervals,omitempty"`
+	Type                 string                  `json:"type,omitempty"`
+	Color                string                  `json:"color,omitempty"`
+	Datasets             []string                `json:"datasets,omitempty"`
+	ColorRamp            string                  `json:"colorRamp,omitempty"`
+	ClusterMaxZoomLevels *map[string]interface{} `json:"clusterMaxZoomLevels,omitempty"`
+	MaxZoom              int                     `json:"maxZoom,omitempty"`
+	AggregationOperation string                  `json:"aggregationOperation,omitempty"`
+	Layers               []DataviewLayer         `json:"layers,omitempty"`
+	Breaks               []float64               `json:"breaks,omitempty"`
+	Intervals            []string                `json:"intervals,omitempty"`
 }
 
 type Dataview struct {
