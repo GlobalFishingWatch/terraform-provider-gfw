@@ -23,6 +23,7 @@ var DATASET_TYPES []string = []string{
 	"user-context-layer:v1",
 	"context-layer:v1",
 	"data-download:v1",
+	"bulk-download:v1",
 	"temporal-context-layer:v1",
 }
 var DATASET_CATEGORIES []string = []string{
@@ -450,6 +451,11 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 						},
+						"bulk_config": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringIsJSON,
+						},
 					},
 				},
 			},
@@ -765,6 +771,13 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		config.ConfigurationUI = &obj
 	}
 
+	if val, ok := schema["bulk_config"]; ok {
+		var obj map[string]interface{}
+		json.Unmarshal([]byte(val.(string)), &obj)
+
+		config.BulkConfig = &obj
+	}
+
 	return config
 }
 
@@ -893,6 +906,14 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 			return diag.FromErr(err)
 		}
 		a["configuration_ui"] = string(jsonStr)
+	}
+
+	if config.BulkConfig != nil {
+		jsonStr, err := json.Marshal(config.BulkConfig)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		a["bulk_config"] = string(jsonStr)
 	}
 
 	return a
