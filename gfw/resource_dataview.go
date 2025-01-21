@@ -363,7 +363,7 @@ func schemaToDataviewConfiguration(schema map[string]interface{}) (api.DataviewC
 		Breaks:               utils.ConvertArrayInterfaceToArrayFloat(schema["breaks"].([]interface{})),
 		AggregationOperation: schema["aggregation_operation"].(string),
 	}
-	if val, ok := schema["cluster_max_zoom_levels"]; ok {
+	if val, ok := schema["cluster_max_zoom_levels"]; ok && val != "" {
 		var obj map[string]interface{}
 		err := json.Unmarshal([]byte(val.(string)), &obj)
 		if err != nil {
