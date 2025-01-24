@@ -141,6 +141,10 @@ func resourceDataview() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"pickable": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
 						"max_zoom": {
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -357,6 +361,7 @@ func schemaToDataviewConfiguration(schema map[string]interface{}) (api.DataviewC
 	config := api.DataviewConfiguration{
 		Type:                 schema["type"].(string),
 		Color:                schema["color"].(string),
+		Pickable:             schema["pickable"].(bool),
 		ColorRamp:            schema["color_ramp"].(string),
 		Datasets:             utils.ConvertArrayInterfaceToArrayString(schema["datasets"].([]interface{})),
 		Intervals:            utils.ConvertArrayInterfaceToArrayString(schema["intervals"].([]interface{})),
@@ -421,6 +426,7 @@ func flattenDataviewConfiguration(config api.DataviewConfiguration) interface{} 
 	a["color_ramp"] = config.ColorRamp
 	a["datasets"] = config.Datasets
 	a["max_zoom"] = config.MaxZoom
+	a["pickable"] = config.Pickable
 	a["aggregation_operation"] = config.AggregationOperation
 	a["breaks"] = config.Breaks
 	a["intervals"] = config.Intervals
