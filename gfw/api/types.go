@@ -205,6 +205,7 @@ type DataviewConfiguration struct {
 	Color                string                  `json:"color,omitempty"`
 	Datasets             []string                `json:"datasets,omitempty"`
 	ColorRamp            string                  `json:"colorRamp,omitempty"`
+	Filters              *map[string]interface{} `json:"filters,omitempty"`
 	ClusterMaxZoomLevels *map[string]interface{} `json:"clusterMaxZoomLevels,omitempty"`
 	Pickable             bool                    `json:"pickable,omitempty"`
 	MaxZoom              int                     `json:"maxZoom,omitempty"`

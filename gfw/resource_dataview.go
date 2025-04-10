@@ -163,6 +163,11 @@ func resourceDataview() *schema.Resource {
 							Optional:     true,
 							ValidateFunc: validation.StringIsJSON,
 						},
+						"filters": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringIsJSON,
+						},
 					},
 				},
 			},
@@ -377,6 +382,14 @@ func schemaToDataviewConfiguration(schema map[string]interface{}) (api.DataviewC
 		}
 		config.ClusterMaxZoomLevels = &obj
 	}
+	if val, ok := schema["filters"]; ok && val != "" {
+		var obj map[string]interface{}
+		err := json.Unmarshal([]byte(val.(string)), &obj)
+		if err != nil {
+			return api.DataviewConfiguration{}, err
+		}
+		config.Filters = &obj
+	}
 	if val, ok := schema["max_zoom"]; ok {
 		config.MaxZoom = val.(int)
 	}
@@ -438,6 +451,14 @@ func flattenDataviewConfiguration(config api.DataviewConfiguration) interface{} 
 			return diag.FromErr(err)
 		}
 		a["cluster_max_zoom_levels"] = string(jsonStr)
+	}
+
+	if config.Filters != nil {
+		jsonStr, err := json.Marshal(config.Filters)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		a["filters"] = string(jsonStr)
 	}
 
 	if config.Layers != nil {
