@@ -25,6 +25,7 @@ var DATASET_TYPES []string = []string{
 	"data-download:v1",
 	"bulk-download:v1",
 	"temporal-context-layer:v1",
+	"pm-tiles:v1",
 }
 var DATASET_CATEGORIES []string = []string{
 	"activity",
