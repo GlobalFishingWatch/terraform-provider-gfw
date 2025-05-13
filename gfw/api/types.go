@@ -146,6 +146,7 @@ type DatasetConfiguration struct {
 	TileOffset              float64                    `json:"tileOffset,omitempty"`
 	IDProperty              string                     `json:"idProperty"`
 	ValueProperties         []string                   `json:"valueProperties"`
+	Extensions              []string                   `json:"extensions"`
 	InsightSources          []InsightSources           `json:"insightSources,omitempty"`
 	ConfigurationUI         *map[string]interface{}    `json:"configurationUI,omitempty"`
 	BulkConfig              *map[string]interface{}    `json:"bulkConfig,omitempty"`

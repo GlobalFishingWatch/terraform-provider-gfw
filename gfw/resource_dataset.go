@@ -458,6 +458,13 @@ func resourceDataset() *schema.Resource {
 							Optional:     true,
 							ValidateFunc: validation.StringIsJSON,
 						},
+						"extensions": {
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Type:     schema.TypeList,
+							Optional: true,
+						},
 					},
 				},
 			},
@@ -723,6 +730,12 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 			config.ValueProperties = nil
 		}
 	}
+	if val, ok := schema["extensions"]; ok {
+		config.Extensions = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+		if len(config.Extensions) == 0 {
+			config.Extensions = nil
+		}
+	}
 	if val, ok := schema["email_groups"]; ok {
 		config.EmailGroups = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
 	}
@@ -900,6 +913,7 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["scale"] = config.Scale
 	a["tile_scale"] = config.Scale
 	a["value_properties"] = config.ValueProperties
+	a["extensions"] = config.Extensions
 	a["id_property"] = config.IDProperty
 
 	if config.ConfigurationUI != nil {
