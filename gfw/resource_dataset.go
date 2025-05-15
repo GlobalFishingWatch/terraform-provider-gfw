@@ -61,6 +61,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"phosphate",
 	"waves",
 	"ph",
+	"sentinel-2",
 }
 var DATASET_UNITS []string = []string{
 	"unit",
