@@ -44,6 +44,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"loitering",
 	"presence",
 	"port_visit",
+	"ports",
 	"fishing",
 	"info",
 	"insight",
