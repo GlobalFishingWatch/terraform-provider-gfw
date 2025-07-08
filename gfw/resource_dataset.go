@@ -276,6 +276,10 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
+						"doi": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
 						"documentation": {
 							Type:     schema.TypeList,
 							Optional: true,
@@ -712,6 +716,10 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		translate := val.(bool)
 		config.Translate = translate
 	}
+	if val, ok := schema["doi"]; ok {
+		doi := val.(bool)
+		config.Doi = doi
+	}
 	if val, ok := schema["num_layers"]; ok {
 		numLayers := val.(int)
 		config.NumLayers = numLayers
@@ -881,6 +889,7 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["index_boost"] = config.IndexBoost
 	a["version"] = config.Version
 	a["translate"] = config.Translate
+	a["doi"] = config.Doi
 	a["num_bytes"] = config.NumBytes
 	if config.Documentation != nil {
 		a["documentation"] = []interface{}{flattenDatasetDocumentation(*config.Documentation)}

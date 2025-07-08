@@ -119,6 +119,7 @@ type DatasetConfiguration struct {
 	IndexBoost              float64                    `json:"indexBoost,omitempty"`
 	Version                 int                        `json:"version,omitempty"`
 	Translate               bool                       `json:"translate,omitempty"`
+	Doi                     bool                       `json:"doi,omitempty"`
 	Documentation           *DatasetDocumentation      `json:"documentation,omitempty"`
 	Fields                  []string                   `json:"fields,omitempty"`
 	GeometryType            string                     `json:"geometryType,omitempty"`
