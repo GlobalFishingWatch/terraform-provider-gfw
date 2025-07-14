@@ -98,6 +98,11 @@ type DatasetConfigurationRange struct {
 	Min float64 `json:"min,omitempty"`
 	Max float64 `json:"max,omitempty"`
 }
+
+type DOIConfiguration struct {
+	DOI        string `json:"doi,omitempty"`
+	ConceptDOI int    `json:"conceptDOI,omitempty"`
+}
 type DatasetConfiguration struct {
 	ApiSupportedVersions    []string                   `json:"apiSupportedVersions,omitempty"`
 	InteractionColumns      []string                   `json:"interactionColumns,omitempty"`
@@ -125,6 +130,7 @@ type DatasetConfiguration struct {
 	GeometryType            string                     `json:"geometryType,omitempty"`
 	PropertyToInclude       string                     `json:"propertyToInclude,omitempty"`
 	PropertyToIncludeRange  *DatasetConfigurationRange `json:"propertyToIncludeRange,omitempty"`
+	DOIConfig               *DOIConfiguration          `json:"doiConfig,omitempty"`
 	FilePath                string                     `json:"filePath,omitempty"`
 	Srid                    string                     `json:"srid,omitempty"`
 	Format                  string                     `json:"format,omitempty"`
