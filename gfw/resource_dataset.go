@@ -471,6 +471,23 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 						},
+						"doi_config": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"doi": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"concept_doi": {
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -789,6 +806,14 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		}
 	}
 
+	if val, ok := schema["doi_config"]; ok {
+		doiConfig := val.([]interface{})
+		if len(doiConfig) > 0 {
+			prop := schemaToDatasetConfigurationDOI(doiConfig[0].(map[string]interface{}))
+			config.DOIConfig = &prop
+		}
+	}
+
 	if val, ok := schema["configuration_ui"]; ok {
 		var obj map[string]interface{}
 		json.Unmarshal([]byte(val.(string)), &obj)
@@ -820,6 +845,14 @@ func schemaToDatasetConfigurationRange(schema map[string]interface{}) api.Datase
 	doc := api.DatasetConfigurationRange{
 		Min: schema["min"].(float64),
 		Max: schema["max"].(float64),
+	}
+
+	return doc
+}
+func schemaToDatasetConfigurationDOI(schema map[string]interface{}) api.DOIConfiguration {
+	doc := api.DOIConfiguration{
+		DOI:        schema["doi"].(string),
+		ConceptDOI: schema["concept_doi"].(int),
 	}
 
 	return doc
@@ -902,6 +935,9 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a["property_to_include"] = config.PropertyToInclude
 	if config.PropertyToIncludeRange != nil {
 		a["property_to_include_range"] = []interface{}{flattenDatasetConfigurationRange(*config.PropertyToIncludeRange)}
+	}
+	if config.DOIConfig != nil {
+		a["doi_config"] = []interface{}{flattenDOIConfig(*config.DOIConfig)}
 	}
 	a["file_path"] = config.FilePath
 	a["srid"] = config.Srid
@@ -992,6 +1028,14 @@ func flattenDatasetConfigurationRange(r api.DatasetConfigurationRange) interface
 
 	a["max"] = r.Max
 	a["min"] = r.Min
+
+	return a
+}
+func flattenDOIConfig(r api.DOIConfiguration) interface{} {
+	a := make(map[string]interface{})
+
+	a["doii"] = r.DOI
+	a["concept_doi"] = r.ConceptDOI
 
 	return a
 }
