@@ -1034,7 +1034,7 @@ func flattenDatasetConfigurationRange(r api.DatasetConfigurationRange) interface
 func flattenDOIConfig(r api.DOIConfiguration) interface{} {
 	a := make(map[string]interface{})
 
-	a["doii"] = r.DOI
+	a["doi"] = r.DOI
 	a["concept_doi"] = r.ConceptDOI
 
 	return a
