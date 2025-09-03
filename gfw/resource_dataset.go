@@ -63,6 +63,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"waves",
 	"ph",
 	"sentinel-2",
+	"ais_false",
 }
 var DATASET_UNITS []string = []string{
 	"unit",
