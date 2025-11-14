@@ -17,25 +17,24 @@ var DATAVIEW_TYPES []string = []string{"context", "environment", "activity", "de
 var DATAVIEW_APPS []string = []string{"fishing-map", "vessel-history"}
 var DATAVIEW_CONFIG_INTERVALS []string = []string{"hours", "day", "10days", "month", "year", "HOURS", "DAY", "10DAYS", "MONTH", "YEAR"}
 var DATAVIEW_CONFIG_TYPES []string = []string{
+	"BACKGROUND",
+	"BASEMAP_LABELS",
 	"BASEMAP",
 	"BATHYMETRY",
-	"CURRENTS",
+	"CONTEXT",
+	"FOURWINGS_TILE_CLUSTER",
+	"FOURWINGS_VECTORS",
 	"GRATICULES",
-	"HEATMAP",
 	"HEATMAP_ANIMATED",
 	"HEATMAP_STATIC",
-	"TRACK",
-	"CONTEXT",
-	"USER_CONTEXT",
-	"TILE_CLUSTER",
-	"FOURWINGS_TILE_CLUSTER",
-	"BACKGROUND",
+	"HEATMAP",
 	"POLYGONS",
+	"TILE_CLUSTER",
+	"TRACK",
 	"USER_CONTEXT",
 	"USER_POINTS",
-	"VESSEL_EVENTS",
 	"VESSEL_EVENTS_SHAPES",
-	"BASEMAP_LABELS",
+	"VESSEL_EVENTS",
 }
 
 func resourceDataview() *schema.Resource {
