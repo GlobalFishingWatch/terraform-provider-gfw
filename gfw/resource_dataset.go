@@ -50,6 +50,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"fishing",
 	"gap_start",
 	"gap",
+	"gaps",
 	"info",
 	"insight",
 	"loitering",
