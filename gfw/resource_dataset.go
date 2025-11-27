@@ -43,9 +43,8 @@ var DATASET_CATEGORIES []string = []string{
 var DATASET_SUBCATEGORIES []string = []string{
 	"ais_false",
 	"animal",
-	"currents",
-	"wind",
 	"chlorophyl",
+	"currents",
 	"encounter",
 	"fishing",
 	"gap_start",
@@ -69,6 +68,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"viirs",
 	"water-temperature",
 	"waves",
+	"winds",
 }
 
 var DATASET_UNITS []string = []string{
