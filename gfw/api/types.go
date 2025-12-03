@@ -211,8 +211,8 @@ type TracksV1Config struct {
 	Folder string `json:"folder,omitempty"`
 }
 
-// Front Configuration
-type FrontConfig struct {
+// Frontend Configuration
+type FrontendConfig struct {
 	MaxZoom            int      `json:"maxZoom,omitempty"`
 	Translate          bool     `json:"translate,omitempty"`
 	Max                float64  `json:"max,omitempty"`
@@ -241,7 +241,7 @@ type VesselsV1Config struct {
 
 // Insights Configuration
 type InsightsV1Config struct {
-	InsightSources []InsightSources `json:"insightSources,omitempty"`
+	Sources []InsightSources `json:"sources,omitempty"`
 }
 
 // Bulk Download Configuration
@@ -278,7 +278,7 @@ type DatasetConfiguration struct {
 	EventsV1               *EventsV1Config               `json:"eventsV1,omitempty"`
 	FourwingsV1            *FourwingsV1Config            `json:"4wingsV1,omitempty"`
 	TracksV1               *TracksV1Config               `json:"tracksV1,omitempty"`
-	Front                  *FrontConfig                  `json:"front,omitempty"`
+	Frontend               *FrontendConfig               `json:"frontend,omitempty"`
 	VesselsV1              *VesselsV1Config              `json:"vesselsV1,omitempty"`
 	InsightsV1             *InsightsV1Config             `json:"insightsV1,omitempty"`
 	BulkDownloadV1         *BulkDownloadV1Config         `json:"bulkDownloadV1,omitempty"`

@@ -45,3 +45,5 @@ keys
 .idea/
 
 __debug_bin
+
+terraform-provider-gfw

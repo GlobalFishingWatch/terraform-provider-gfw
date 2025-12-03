@@ -553,7 +553,7 @@ func resourceDataset() *schema.Resource {
 								},
 							},
 						},
-						"front": {
+						"frontend": {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
@@ -663,7 +663,7 @@ func resourceDataset() *schema.Resource {
 							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"insight_sources": {
+									"sources": {
 										Type:     schema.TypeList,
 										Optional: true,
 										Elem: &schema.Resource{
@@ -1079,12 +1079,12 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 		}
 	}
 
-	// Front
-	if val, ok := schema["front"]; ok {
+	// Frontend
+	if val, ok := schema["frontend"]; ok {
 		configArray := val.([]interface{})
 		if len(configArray) > 0 {
-			frontConfig := schemaToFrontConfig(configArray[0].(map[string]interface{}))
-			config.Front = &frontConfig
+			frontendConfig := schemaToFrontendConfig(configArray[0].(map[string]interface{}))
+			config.Frontend = &frontendConfig
 		}
 	}
 
@@ -1328,8 +1328,8 @@ func schemaToTracksV1Config(schema map[string]interface{}) api.TracksV1Config {
 	return config
 }
 
-func schemaToFrontConfig(schema map[string]interface{}) api.FrontConfig {
-	config := api.FrontConfig{}
+func schemaToFrontendConfig(schema map[string]interface{}) api.FrontendConfig {
+	config := api.FrontendConfig{}
 	if val, ok := schema["max_zoom"]; ok {
 		config.MaxZoom = val.(int)
 	}
@@ -1400,14 +1400,14 @@ func schemaToVesselsV1Config(schema map[string]interface{}) api.VesselsV1Config 
 
 func schemaToInsightsV1Config(schema map[string]interface{}) api.InsightsV1Config {
 	config := api.InsightsV1Config{}
-	if val, ok := schema["insight_sources"]; ok {
-		insightSourcesArray := val.([]interface{})
-		if len(insightSourcesArray) > 0 {
-			array := make([]api.InsightSources, len(insightSourcesArray))
-			for i, source := range insightSourcesArray {
+	if val, ok := schema["sources"]; ok {
+		sourcesArray := val.([]interface{})
+		if len(sourcesArray) > 0 {
+			array := make([]api.InsightSources, len(sourcesArray))
+			for i, source := range sourcesArray {
 				array[i] = schemaToDatasetInsightSource(source.(map[string]interface{}))
 			}
-			config.InsightSources = array
+			config.Sources = array
 		}
 	}
 	return config
@@ -1546,9 +1546,9 @@ func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 		a["tracks_v1"] = []interface{}{flattenTracksV1Config(*config.TracksV1)}
 	}
 
-	// Front
-	if config.Front != nil {
-		a["front"] = []interface{}{flattenFrontConfig(*config.Front)}
+	// Frontend
+	if config.Frontend != nil {
+		a["frontend"] = []interface{}{flattenFrontendConfig(*config.Frontend)}
 	}
 
 	// Vessels V1
@@ -1671,7 +1671,7 @@ func flattenTracksV1Config(config api.TracksV1Config) map[string]interface{} {
 	return a
 }
 
-func flattenFrontConfig(config api.FrontConfig) map[string]interface{} {
+func flattenFrontendConfig(config api.FrontendConfig) map[string]interface{} {
 	a := make(map[string]interface{})
 	a["max_zoom"] = config.MaxZoom
 	a["translate"] = config.Translate
@@ -1703,8 +1703,8 @@ func flattenVesselsV1Config(config api.VesselsV1Config) map[string]interface{} {
 
 func flattenInsightsV1Config(config api.InsightsV1Config) map[string]interface{} {
 	a := make(map[string]interface{})
-	if config.InsightSources != nil {
-		a["insight_sources"] = flattenDatasetInsightSources(config.InsightSources)
+	if config.Sources != nil {
+		a["sources"] = flattenDatasetInsightSources(config.Sources)
 	}
 	return a
 }
