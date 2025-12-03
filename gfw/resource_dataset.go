@@ -2,7 +2,6 @@ package gfw
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/globalfishingwatch.org/terraform-provider-gfw/gfw/api"
@@ -94,6 +93,71 @@ var DATASET_STATUSES []string = []string{
 
 var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
 var DATASET_CONFIGURATION_FORMATS []string = []string{"geojson", "pmtile"}
+var DATASET_CONFIGURATION_SOURCE_FORMATS []string = []string{"CSV", "geojson", "pmtile"}
+var DATASET_4WINGS_INTERVALS []string = []string{"HOUR", "DAY", "MONTH", "YEAR"}
+var DATASET_4WINGS_REPORT_GROUPINGS []string = []string{"id", "mmsi", "geartype", "flag", "flagAndGearType"}
+
+func filterConfigSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"label": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"id": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"type": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"required": {
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		"array": {
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		"enum": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     &schema.Schema{Type: schema.TypeString},
+		},
+		"enabled": {
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		"format": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"max_length": {
+			Type:     schema.TypeInt,
+			Optional: true,
+		},
+		"min_length": {
+			Type:     schema.TypeInt,
+			Optional: true,
+		},
+		"max": {
+			Type:     schema.TypeFloat,
+			Optional: true,
+		},
+		"min": {
+			Type:     schema.TypeFloat,
+			Optional: true,
+		},
+		"single_selection": {
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		"operation": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+	}
+}
 
 func resourceDataset() *schema.Resource {
 	return &schema.Resource{
@@ -183,11 +247,6 @@ func resourceDataset() *schema.Resource {
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"configuration_ui": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ValidateFunc: validation.StringIsJSON,
-						},
 						"api_supported_versions": {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -195,293 +254,481 @@ func resourceDataset() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 						},
-						"interaction_columns": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"interaction_group_columns": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"max_zoom": {
-							Type:     schema.TypeInt,
-							Optional: true,
-							Default:  12,
-						},
-						"source": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"function": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"geometry_column": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"database_instance": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"project": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"dataset": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"table": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"bucket": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"folder": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"intervals": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"num_bytes": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"num_layers": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"index": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"index_boost": {
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"version": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"translate": {
-							Type:     schema.TypeBool,
-							Optional: true,
-						},
-						"documentation": {
+						"context_layer_v1": {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"type": {
+									"import_logs": {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
-									"enable": {
-										Type:     schema.TypeBool,
-										Optional: true,
-									},
-									"status": {
+									"srid": {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
-									"queries": {
+									"format": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_FORMATS, false),
+									},
+									"fields": {
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
 										},
 										Type:     schema.TypeList,
 										Optional: true,
 									},
-									"provider": {
+									"file_path": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"id_property": {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
 								},
 							},
 						},
-						"insight_sources": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"id": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"type": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"insight": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-								},
-							},
-						},
-						"fields": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"geometry_type": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_GEOMETRY_TYPES, false),
-						},
-						"property_to_include": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"property_to_include_range": {
+						"user_context_layer_v1": {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"min": {
-										Type:     schema.TypeFloat,
+									"table": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"import_logs": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"srid": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"format": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_FORMATS, false),
+									},
+									"fields": {
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"file_path": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"id_property": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"value_property_id": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"temporal_context_layer_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"dataset": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"project": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"source": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"table": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"user_tracks_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"file_path": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"id_property": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"pm_tiles_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"file_path": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"id_property": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"events_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"table": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"dataset": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"project": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"function": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"ttl": {
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"max_zoom": {
+										Type:     schema.TypeInt,
+										Optional: true,
+										Default:  12,
+									},
+								},
+							},
+						},
+						"fourwings_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"report_groupings": {
+										Elem: &schema.Schema{
+											Type:         schema.TypeString,
+											ValidateFunc: validation.StringInSlice(DATASET_4WINGS_REPORT_GROUPINGS, false),
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"table": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"dataset": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"max_zoom": {
+										Type:     schema.TypeInt,
+										Optional: true,
+										Default:  12,
+									},
+									"project": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"function": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"intervals": {
+										Elem: &schema.Schema{
+											Type:         schema.TypeString,
+											ValidateFunc: validation.StringInSlice(DATASET_4WINGS_INTERVALS, false),
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"ttl": {
+										Type:     schema.TypeInt,
 										Optional: true,
 									},
 									"max": {
 										Type:     schema.TypeFloat,
 										Optional: true,
 									},
+									"min": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"tile_scale": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"tile_offset": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"gee_scale": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"gee_offset": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"gee_band": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"gee_images": {
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"interaction_columns": {
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"interaction_group_columns": {
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"temporal_aggregation": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+									"source": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 								},
 							},
 						},
-						"file_path": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"srid": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"format": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_FORMATS, false),
-						},
-						"latitude": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"longitude": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"timestamp": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"id": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"ttl": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"gcs_folder": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"email_groups": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"disable_interaction": {
-							Type:     schema.TypeBool,
-							Optional: true,
-						},
-						"images": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"band": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"min": {
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"max": {
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"scale": {
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"offset": {
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"tile_scale": {
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"tile_offset": {
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"id_property": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"value_properties": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"bulk_config": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ValidateFunc: validation.StringIsJSON,
-						},
-						"extensions": {
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Type:     schema.TypeList,
-							Optional: true,
-						},
-						"doi_config": {
+						"tracks_v1": {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"bucket": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"folder": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"front": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"max_zoom": {
+										Type:     schema.TypeInt,
+										Optional: true,
+										Default:  12,
+									},
+									"translate": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+									"max": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"min": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"disable_interaction": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+									"latitude": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"longitude": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"start_time": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"end_time": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"timestamp": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"geometry_type": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_GEOMETRY_TYPES, false),
+									},
+									"source_format": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_SOURCE_FORMATS, false),
+									},
+									"time_filter_type": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"value_properties": {
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"polygon_color": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"point_size": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"line_id": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"segment_id": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"vessels_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"index": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"index_boost": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"insights_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"insight_sources": {
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"id": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"type": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"insight": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"bulk_download_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"gcs_uri": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"path": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"format": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_SOURCE_FORMATS, false),
+									},
+									"compressed": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"data_download_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"email_groups": {
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"gcs_folder": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 									"doi": {
 										Type:     schema.TypeString,
 										Optional: true,
@@ -493,25 +740,103 @@ func resourceDataset() *schema.Resource {
 								},
 							},
 						},
+						"thumbnails_v1": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"extensions": {
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Type:     schema.TypeList,
+										Optional: true,
+									},
+									"bucket": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"folder": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"scale": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
-			"fields_allowed": {
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"filters": {
 				Type:     schema.TypeList,
 				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"fourwings": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: filterConfigSchema(),
+							},
+						},
+						"events": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: filterConfigSchema(),
+							},
+						},
+						"vessels": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: filterConfigSchema(),
+							},
+						},
+						"tracks": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: filterConfigSchema(),
+							},
+						},
+					},
+				},
 			},
-			"schema": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringIsJSON,
-			},
-			"filters": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringIsJSON,
+			"documentation": {
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"enable": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"status": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"queries": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+						"provider": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"created_at": {
 				Type:     schema.TypeString,
@@ -575,24 +900,11 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 		d.Set("status", dataset.Status)
 	}
 	d.Set("source", dataset.Source)
-	d.Set("fields_allowed", dataset.FieldsAllowed)
 	d.Set("type", dataset.Type)
 
-	if dataset.Schema != nil {
-		jsonStr, err := json.Marshal(dataset.Schema)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		if err := d.Set("schema", string(jsonStr)); err != nil {
-			return diag.FromErr(err)
-		}
-	}
 	if dataset.Filters != nil {
-		jsonStr, err := json.Marshal(dataset.Filters)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		if err := d.Set("filters", string(jsonStr)); err != nil {
+		filters := flattenDatasetFilters(*dataset.Filters)
+		if err := d.Set("filters", []interface{}{filters}); err != nil {
 			return diag.FromErr(err)
 		}
 	}
@@ -600,6 +912,13 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 	if dataset.Configuration != nil {
 		configuration := flattenDatasetConfiguration(*dataset.Configuration)
 		if err := d.Set("configuration", []interface{}{configuration}); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if dataset.Documentation != nil {
+		documentation := flattenDatasetDocumentation(*dataset.Documentation)
+		if err := d.Set("documentation", []interface{}{documentation}); err != nil {
 			return diag.FromErr(err)
 		}
 	}
@@ -651,30 +970,25 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 	if d.Get("alias") != nil {
 		dataset.Alias = utils.ConvertArrayInterfaceToArrayString(d.Get("alias").([]interface{}))
 	}
-	if d.Get("fields_allowed") != nil {
-		dataset.FieldsAllowed = utils.ConvertArrayInterfaceToArrayString(d.Get("fields_allowed").([]interface{}))
-	}
-	if d.Get("schema") != nil && d.Get("schema").(string) != "" {
-		var obj map[string]interface{}
-		err := json.Unmarshal([]byte(d.Get("schema").(string)), &obj)
-		if err != nil {
-			return api.CreateDataset{}, err
+	if d.Get("filters") != nil {
+		filtersList := d.Get("filters").([]interface{})
+		if len(filtersList) > 0 {
+			filters := schemaToDatasetFilters(filtersList[0].(map[string]interface{}))
+			dataset.Filters = &filters
 		}
-		dataset.Schema = &obj
-	}
-	if d.Get("filters") != nil && d.Get("filters").(string) != "" {
-		var obj map[string]interface{}
-		err := json.Unmarshal([]byte(d.Get("filters").(string)), &obj)
-		if err != nil {
-			return api.CreateDataset{}, err
-		}
-		dataset.Filters = &obj
 	}
 	if d.Get("configuration") != nil {
 		configuration := d.Get("configuration").([]interface{})
 		if len(configuration) > 0 {
 			config := schemaToDatasetConfiguration(configuration[0].(map[string]interface{}))
 			dataset.Configuration = &config
+		}
+	}
+	if d.Get("documentation") != nil {
+		documentationList := d.Get("documentation").([]interface{})
+		if len(documentationList) > 0 {
+			documentation := schemaToDatasetDocumentation(documentationList[0].(map[string]interface{}))
+			dataset.Documentation = &documentation
 		}
 	}
 	if d.Get("related_datasets") != nil {
@@ -686,109 +1000,406 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 }
 
 func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConfiguration {
-	config := api.DatasetConfiguration{
-		Source:            schema["source"].(string),
-		Function:          schema["function"].(string),
-		Type:              schema["type"].(string),
-		GeometryColumn:    schema["geometry_column"].(string),
-		DatabaseInstance:  schema["database_instance"].(string),
-		Project:           schema["project"].(string),
-		Dataset:           schema["dataset"].(string),
-		Table:             schema["table"].(string),
-		Bucket:            schema["bucket"].(string),
-		Folder:            schema["folder"].(string),
-		Index:             schema["index"].(string),
-		IndexBoost:        schema["index_boost"].(float64),
-		GeometryType:      schema["geometry_type"].(string),
-		PropertyToInclude: schema["property_to_include"].(string),
-		FilePath:          schema["file_path"].(string),
-		Srid:              schema["srid"].(string),
-		Format:            schema["format"].(string),
-		Latitude:          schema["latitude"].(string),
-		Longitude:         schema["longitude"].(string),
-		Timestamp:         schema["timestamp"].(string),
-		Offset:            schema["offset"].(float64),
-		TileOffset:        schema["tile_offset"].(float64),
-		IDProperty:        schema["id_property"].(string),
-		Scale:             schema["scale"].(float64),
-		TileScale:         schema["tile_scale"].(float64),
-		Min:               schema["min"].(float64),
-		Max:               schema["max"].(float64),
-		Band:              schema["band"].(string),
-		GcsFolder:         schema["gcs_folder"].(string),
-		ID:                schema["id"].(string),
-	}
-	if val, ok := schema["max_zoom"]; ok {
-		maxZoom := val.(int)
-		config.MaxZoom = maxZoom
-	}
-	if val, ok := schema["num_bytes"]; ok {
-		numBytes := val.(int)
-		config.NumBytes = numBytes
-	}
-	if val, ok := schema["ttl"]; ok {
-		ttl := val.(int)
-		config.TTL = ttl
-	}
-	if val, ok := schema["disable_interaction"]; ok {
-		disableInteraction := val.(bool)
-		config.DisableInteraction = disableInteraction
-	}
-	if val, ok := schema["translate"]; ok {
-		translate := val.(bool)
-		config.Translate = translate
-	}
-	if val, ok := schema["num_layers"]; ok {
-		numLayers := val.(int)
-		config.NumLayers = numLayers
-	}
-	if val, ok := schema["version"]; ok {
-		version := val.(int)
-		config.Version = version
-	}
-	if val, ok := schema["images"]; ok {
-		config.Images = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
-		if len(config.Images) == 0 {
-			config.Images = nil
-		}
-	}
-	if val, ok := schema["value_properties"]; ok {
-		config.ValueProperties = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
-		if len(config.ValueProperties) == 0 {
-			config.ValueProperties = nil
-		}
-	}
-	if val, ok := schema["extensions"]; ok {
-		config.Extensions = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
-		if len(config.Extensions) == 0 {
-			config.Extensions = nil
-		}
-	}
-	if val, ok := schema["email_groups"]; ok {
-		config.EmailGroups = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
-	}
+	config := api.DatasetConfiguration{}
+
+	// API Supported Versions
 	if val, ok := schema["api_supported_versions"]; ok {
 		config.ApiSupportedVersions = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
 	}
-	if val, ok := schema["intervals"]; ok {
-		config.Intervals = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+
+	// Context Layer V1
+	if val, ok := schema["context_layer_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			contextConfig := schemaToContextLayerV1Config(configArray[0].(map[string]interface{}))
+			config.ContextLayerV1 = &contextConfig
+		}
 	}
-	if val, ok := schema["interaction_group_columns"]; ok {
-		config.InteractionGroupColumns = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+
+	// User Context Layer V1
+	if val, ok := schema["user_context_layer_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			userContextConfig := schemaToUserContextLayerV1Config(configArray[0].(map[string]interface{}))
+			config.UserContextLayerV1 = &userContextConfig
+		}
 	}
-	if val, ok := schema["interaction_columns"]; ok {
-		config.InteractionColumns = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+
+	// Temporal Context Layer V1
+	if val, ok := schema["temporal_context_layer_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			temporalContextConfig := schemaToTemporalContextLayerV1Config(configArray[0].(map[string]interface{}))
+			config.TemporalContextLayerV1 = &temporalContextConfig
+		}
+	}
+
+	// User Tracks V1
+	if val, ok := schema["user_tracks_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			userTracksConfig := schemaToUserTracksV1Config(configArray[0].(map[string]interface{}))
+			config.UserTracksV1 = &userTracksConfig
+		}
+	}
+
+	// PM Tiles V1
+	if val, ok := schema["pm_tiles_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			pmTilesConfig := schemaToPmTilesV1Config(configArray[0].(map[string]interface{}))
+			config.PmTilesV1 = &pmTilesConfig
+		}
+	}
+
+	// Events V1
+	if val, ok := schema["events_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			eventsConfig := schemaToEventsV1Config(configArray[0].(map[string]interface{}))
+			config.EventsV1 = &eventsConfig
+		}
+	}
+
+	// Fourwings V1
+	if val, ok := schema["fourwings_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			fourwingsConfig := schemaToFourwingsV1Config(configArray[0].(map[string]interface{}))
+			config.FourwingsV1 = &fourwingsConfig
+		}
+	}
+
+	// Tracks V1
+	if val, ok := schema["tracks_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			tracksConfig := schemaToTracksV1Config(configArray[0].(map[string]interface{}))
+			config.TracksV1 = &tracksConfig
+		}
+	}
+
+	// Front
+	if val, ok := schema["front"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			frontConfig := schemaToFrontConfig(configArray[0].(map[string]interface{}))
+			config.Front = &frontConfig
+		}
+	}
+
+	// Vessels V1
+	if val, ok := schema["vessels_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			vesselsConfig := schemaToVesselsV1Config(configArray[0].(map[string]interface{}))
+			config.VesselsV1 = &vesselsConfig
+		}
+	}
+
+	// Insights V1
+	if val, ok := schema["insights_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			insightsConfig := schemaToInsightsV1Config(configArray[0].(map[string]interface{}))
+			config.InsightsV1 = &insightsConfig
+		}
+	}
+
+	// Bulk Download V1
+	if val, ok := schema["bulk_download_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			bulkDownloadConfig := schemaToBulkDownloadV1Config(configArray[0].(map[string]interface{}))
+			config.BulkDownloadV1 = &bulkDownloadConfig
+		}
+	}
+
+	// Data Download V1
+	if val, ok := schema["data_download_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			dataDownloadConfig := schemaToDataDownloadV1Config(configArray[0].(map[string]interface{}))
+			config.DataDownloadV1 = &dataDownloadConfig
+		}
+	}
+
+	// Thumbnails V1
+	if val, ok := schema["thumbnails_v1"]; ok {
+		configArray := val.([]interface{})
+		if len(configArray) > 0 {
+			thumbnailsConfig := schemaToThumbnailsV1Config(configArray[0].(map[string]interface{}))
+			config.ThumbnailsV1 = &thumbnailsConfig
+		}
+	}
+
+	return config
+}
+
+// Helper functions for nested configurations
+
+func schemaToContextLayerV1Config(schema map[string]interface{}) api.ContextLayerV1Config {
+	config := api.ContextLayerV1Config{}
+	if val, ok := schema["import_logs"]; ok {
+		config.ImportLogs = val.(string)
+	}
+	if val, ok := schema["srid"]; ok {
+		config.Srid = val.(string)
+	}
+	if val, ok := schema["format"]; ok {
+		config.Format = val.(string)
 	}
 	if val, ok := schema["fields"]; ok {
 		config.Fields = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
 	}
-	if val, ok := schema["documentation"]; ok {
-		documentationArray := val.([]interface{})
-		if len(documentationArray) > 0 {
-			doc := schemaToDatasetDocumentation(documentationArray[0].(map[string]interface{}))
-			config.Documentation = &doc
-		}
+	if val, ok := schema["file_path"]; ok {
+		config.FilePath = val.(string)
 	}
+	if val, ok := schema["id_property"]; ok {
+		config.IDProperty = val.(string)
+	}
+	return config
+}
+
+func schemaToUserContextLayerV1Config(schema map[string]interface{}) api.UserContextLayerV1Config {
+	config := api.UserContextLayerV1Config{}
+	if val, ok := schema["table"]; ok {
+		config.Table = val.(string)
+	}
+	if val, ok := schema["import_logs"]; ok {
+		config.ImportLogs = val.(string)
+	}
+	if val, ok := schema["srid"]; ok {
+		config.Srid = val.(string)
+	}
+	if val, ok := schema["format"]; ok {
+		config.Format = val.(string)
+	}
+	if val, ok := schema["fields"]; ok {
+		config.Fields = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["file_path"]; ok {
+		config.FilePath = val.(string)
+	}
+	if val, ok := schema["id_property"]; ok {
+		config.IDProperty = val.(string)
+	}
+	if val, ok := schema["value_property_id"]; ok {
+		config.ValuePropertyID = val.(string)
+	}
+	return config
+}
+
+func schemaToTemporalContextLayerV1Config(schema map[string]interface{}) api.TemporalContextLayerV1Config {
+	config := api.TemporalContextLayerV1Config{}
+	if val, ok := schema["dataset"]; ok {
+		config.Dataset = val.(string)
+	}
+	if val, ok := schema["project"]; ok {
+		config.Project = val.(string)
+	}
+	if val, ok := schema["source"]; ok {
+		config.Source = val.(string)
+	}
+	if val, ok := schema["table"]; ok {
+		config.Table = val.(string)
+	}
+	return config
+}
+
+func schemaToUserTracksV1Config(schema map[string]interface{}) api.UserTracksV1Config {
+	config := api.UserTracksV1Config{}
+	if val, ok := schema["file_path"]; ok {
+		config.FilePath = val.(string)
+	}
+	if val, ok := schema["id_property"]; ok {
+		config.IDProperty = val.(string)
+	}
+	return config
+}
+
+func schemaToPmTilesV1Config(schema map[string]interface{}) api.PmTilesV1Config {
+	config := api.PmTilesV1Config{}
+	if val, ok := schema["file_path"]; ok {
+		config.FilePath = val.(string)
+	}
+	if val, ok := schema["id_property"]; ok {
+		config.IDProperty = val.(string)
+	}
+	return config
+}
+
+func schemaToEventsV1Config(schema map[string]interface{}) api.EventsV1Config {
+	config := api.EventsV1Config{}
+	if val, ok := schema["table"]; ok {
+		config.Table = val.(string)
+	}
+	if val, ok := schema["dataset"]; ok {
+		config.Dataset = val.(string)
+	}
+	if val, ok := schema["project"]; ok {
+		config.Project = val.(string)
+	}
+	if val, ok := schema["function"]; ok {
+		config.Function = val.(string)
+	}
+	if val, ok := schema["ttl"]; ok {
+		config.TTL = val.(int)
+	}
+	if val, ok := schema["max_zoom"]; ok {
+		config.MaxZoom = val.(int)
+	}
+	return config
+}
+
+func schemaToFourwingsV1Config(schema map[string]interface{}) api.FourwingsV1Config {
+	config := api.FourwingsV1Config{}
+	if val, ok := schema["report_groupings"]; ok {
+		config.ReportGroupings = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["table"]; ok {
+		config.Table = val.(string)
+	}
+	if val, ok := schema["dataset"]; ok {
+		config.Dataset = val.(string)
+	}
+	if val, ok := schema["max_zoom"]; ok {
+		config.MaxZoom = val.(int)
+	}
+	if val, ok := schema["project"]; ok {
+		config.Project = val.(string)
+	}
+	if val, ok := schema["function"]; ok {
+		config.Function = val.(string)
+	}
+	if val, ok := schema["intervals"]; ok {
+		config.Intervals = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["ttl"]; ok {
+		config.TTL = val.(int)
+	}
+	if val, ok := schema["max"]; ok {
+		config.Max = val.(float64)
+	}
+	if val, ok := schema["min"]; ok {
+		config.Min = val.(float64)
+	}
+	if val, ok := schema["tile_scale"]; ok {
+		config.TileScale = val.(float64)
+	}
+	if val, ok := schema["tile_offset"]; ok {
+		config.TileOffset = val.(float64)
+	}
+	if val, ok := schema["gee_scale"]; ok {
+		config.GeeScale = val.(float64)
+	}
+	if val, ok := schema["gee_offset"]; ok {
+		config.GeeOffset = val.(float64)
+	}
+	if val, ok := schema["gee_band"]; ok {
+		config.GeeBand = val.(string)
+	}
+	if val, ok := schema["gee_images"]; ok {
+		config.GeeImages = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["interaction_columns"]; ok {
+		config.InteractionColumns = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["interaction_group_columns"]; ok {
+		config.InteractionGroupColumns = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["temporal_aggregation"]; ok {
+		config.TemporalAggregation = val.(bool)
+	}
+	if val, ok := schema["source"]; ok {
+		config.Source = val.(string)
+	}
+	return config
+}
+
+func schemaToTracksV1Config(schema map[string]interface{}) api.TracksV1Config {
+	config := api.TracksV1Config{}
+	if val, ok := schema["bucket"]; ok {
+		config.Bucket = val.(string)
+	}
+	if val, ok := schema["folder"]; ok {
+		config.Folder = val.(string)
+	}
+	return config
+}
+
+func schemaToFrontConfig(schema map[string]interface{}) api.FrontConfig {
+	config := api.FrontConfig{}
+	if val, ok := schema["max_zoom"]; ok {
+		config.MaxZoom = val.(int)
+	}
+	if val, ok := schema["translate"]; ok {
+		config.Translate = val.(bool)
+	}
+	if val, ok := schema["max"]; ok {
+		config.Max = val.(float64)
+	}
+	if val, ok := schema["min"]; ok {
+		config.Min = val.(float64)
+	}
+	if val, ok := schema["disable_interaction"]; ok {
+		config.DisableInteraction = val.(bool)
+	}
+	if val, ok := schema["latitude"]; ok {
+		config.Latitude = val.(string)
+	}
+	if val, ok := schema["longitude"]; ok {
+		config.Longitude = val.(string)
+	}
+	if val, ok := schema["start_time"]; ok {
+		config.StartTime = val.(string)
+	}
+	if val, ok := schema["end_time"]; ok {
+		config.EndTime = val.(string)
+	}
+	if val, ok := schema["timestamp"]; ok {
+		config.Timestamp = val.(string)
+	}
+	if val, ok := schema["geometry_type"]; ok {
+		config.GeometryType = val.(string)
+	}
+	if val, ok := schema["source_format"]; ok {
+		config.SourceFormat = val.(string)
+	}
+	if val, ok := schema["time_filter_type"]; ok {
+		config.TimeFilterType = val.(string)
+	}
+	if val, ok := schema["value_properties"]; ok {
+		config.ValueProperties = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["polygon_color"]; ok {
+		config.PolygonColor = val.(string)
+	}
+	if val, ok := schema["point_size"]; ok {
+		config.PointSize = val.(string)
+	}
+	if val, ok := schema["line_id"]; ok {
+		config.LineID = val.(string)
+	}
+	if val, ok := schema["segment_id"]; ok {
+		config.SegmentID = val.(string)
+	}
+	return config
+}
+
+func schemaToVesselsV1Config(schema map[string]interface{}) api.VesselsV1Config {
+	config := api.VesselsV1Config{}
+	if val, ok := schema["index"]; ok {
+		config.Index = val.(string)
+	}
+	if val, ok := schema["index_boost"]; ok {
+		config.IndexBoost = val.(float64)
+	}
+	return config
+}
+
+func schemaToInsightsV1Config(schema map[string]interface{}) api.InsightsV1Config {
+	config := api.InsightsV1Config{}
 	if val, ok := schema["insight_sources"]; ok {
 		insightSourcesArray := val.([]interface{})
 		if len(insightSourcesArray) > 0 {
@@ -799,36 +1410,57 @@ func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConf
 			config.InsightSources = array
 		}
 	}
-	if val, ok := schema["property_to_include_range"]; ok {
-		propertyToIncludeRangeArray := val.([]interface{})
-		if len(propertyToIncludeRangeArray) > 0 {
-			prop := schemaToDatasetConfigurationRange(propertyToIncludeRangeArray[0].(map[string]interface{}))
-			config.PropertyToIncludeRange = &prop
-		}
+	return config
+}
+
+func schemaToBulkDownloadV1Config(schema map[string]interface{}) api.BulkDownloadV1Config {
+	config := api.BulkDownloadV1Config{}
+	if val, ok := schema["gcs_uri"]; ok {
+		config.GcsUri = val.(string)
 	}
-
-	if val, ok := schema["doi_config"]; ok {
-		doiConfig := val.([]interface{})
-		if len(doiConfig) > 0 {
-			prop := schemaToDatasetConfigurationDOI(doiConfig[0].(map[string]interface{}))
-			config.DOIConfig = &prop
-		}
+	if val, ok := schema["path"]; ok {
+		config.Path = val.(string)
 	}
-
-	if val, ok := schema["configuration_ui"]; ok {
-		var obj map[string]interface{}
-		json.Unmarshal([]byte(val.(string)), &obj)
-
-		config.ConfigurationUI = &obj
+	if val, ok := schema["format"]; ok {
+		config.Format = val.(string)
 	}
-
-	if val, ok := schema["bulk_config"]; ok {
-		var obj map[string]interface{}
-		json.Unmarshal([]byte(val.(string)), &obj)
-
-		config.BulkConfig = &obj
+	if val, ok := schema["compressed"]; ok {
+		config.Compressed = val.(bool)
 	}
+	return config
+}
 
+func schemaToDataDownloadV1Config(schema map[string]interface{}) api.DataDownloadV1Config {
+	config := api.DataDownloadV1Config{}
+	if val, ok := schema["email_groups"]; ok {
+		config.EmailGroups = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["gcs_folder"]; ok {
+		config.GcsFolder = val.(string)
+	}
+	if val, ok := schema["doi"]; ok {
+		config.Doi = val.(string)
+	}
+	if val, ok := schema["concept_doi"]; ok {
+		config.ConceptDOI = val.(int)
+	}
+	return config
+}
+
+func schemaToThumbnailsV1Config(schema map[string]interface{}) api.ThumbnailsV1Config {
+	config := api.ThumbnailsV1Config{}
+	if val, ok := schema["extensions"]; ok {
+		config.Extensions = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
+	}
+	if val, ok := schema["bucket"]; ok {
+		config.Bucket = val.(string)
+	}
+	if val, ok := schema["folder"]; ok {
+		config.Folder = val.(string)
+	}
+	if val, ok := schema["scale"]; ok {
+		config.Scale = val.(float64)
+	}
 	return config
 }
 
@@ -839,38 +1471,6 @@ func schemaToDatasetInsightSource(schema map[string]interface{}) api.InsightSour
 		Insight: schema["insight"].(string),
 	}
 
-	return doc
-}
-
-func schemaToDatasetConfigurationRange(schema map[string]interface{}) api.DatasetConfigurationRange {
-	doc := api.DatasetConfigurationRange{
-		Min: schema["min"].(float64),
-		Max: schema["max"].(float64),
-	}
-
-	return doc
-}
-func schemaToDatasetConfigurationDOI(schema map[string]interface{}) api.DOIConfiguration {
-	doc := api.DOIConfiguration{
-		DOI:        schema["doi"].(string),
-		ConceptDOI: schema["concept_doi"].(int),
-	}
-
-	return doc
-}
-func schemaToDatasetDocumentation(schema map[string]interface{}) api.DatasetDocumentation {
-	doc := api.DatasetDocumentation{
-		Type:     schema["type"].(string),
-		Status:   schema["status"].(string),
-		Provider: schema["provider"].(string),
-	}
-	if val, ok := schema["enable"]; ok {
-		enable := val.(bool)
-		doc.Enable = enable
-	}
-	if val, ok := schema["queries"]; ok {
-		doc.Queries = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
-	}
 	return doc
 }
 
@@ -903,82 +1503,236 @@ func resourceDatasetDelete(ctx context.Context, d *schema.ResourceData, m interf
 func flattenDatasetConfiguration(config api.DatasetConfiguration) interface{} {
 	a := make(map[string]interface{})
 
+	// API Supported Versions
 	a["api_supported_versions"] = config.ApiSupportedVersions
+
+	// Context Layer V1
+	if config.ContextLayerV1 != nil {
+		a["context_layer_v1"] = []interface{}{flattenContextLayerV1Config(*config.ContextLayerV1)}
+	}
+
+	// User Context Layer V1
+	if config.UserContextLayerV1 != nil {
+		a["user_context_layer_v1"] = []interface{}{flattenUserContextLayerV1Config(*config.UserContextLayerV1)}
+	}
+
+	// Temporal Context Layer V1
+	if config.TemporalContextLayerV1 != nil {
+		a["temporal_context_layer_v1"] = []interface{}{flattenTemporalContextLayerV1Config(*config.TemporalContextLayerV1)}
+	}
+
+	// User Tracks V1
+	if config.UserTracksV1 != nil {
+		a["user_tracks_v1"] = []interface{}{flattenUserTracksV1Config(*config.UserTracksV1)}
+	}
+
+	// PM Tiles V1
+	if config.PmTilesV1 != nil {
+		a["pm_tiles_v1"] = []interface{}{flattenPmTilesV1Config(*config.PmTilesV1)}
+	}
+
+	// Events V1
+	if config.EventsV1 != nil {
+		a["events_v1"] = []interface{}{flattenEventsV1Config(*config.EventsV1)}
+	}
+
+	// Fourwings V1
+	if config.FourwingsV1 != nil {
+		a["fourwings_v1"] = []interface{}{flattenFourwingsV1Config(*config.FourwingsV1)}
+	}
+
+	// Tracks V1
+	if config.TracksV1 != nil {
+		a["tracks_v1"] = []interface{}{flattenTracksV1Config(*config.TracksV1)}
+	}
+
+	// Front
+	if config.Front != nil {
+		a["front"] = []interface{}{flattenFrontConfig(*config.Front)}
+	}
+
+	// Vessels V1
+	if config.VesselsV1 != nil {
+		a["vessels_v1"] = []interface{}{flattenVesselsV1Config(*config.VesselsV1)}
+	}
+
+	// Insights V1
+	if config.InsightsV1 != nil {
+		a["insights_v1"] = []interface{}{flattenInsightsV1Config(*config.InsightsV1)}
+	}
+
+	// Bulk Download V1
+	if config.BulkDownloadV1 != nil {
+		a["bulk_download_v1"] = []interface{}{flattenBulkDownloadV1Config(*config.BulkDownloadV1)}
+	}
+
+	// Data Download V1
+	if config.DataDownloadV1 != nil {
+		a["data_download_v1"] = []interface{}{flattenDataDownloadV1Config(*config.DataDownloadV1)}
+	}
+
+	// Thumbnails V1
+	if config.ThumbnailsV1 != nil {
+		a["thumbnails_v1"] = []interface{}{flattenThumbnailsV1Config(*config.ThumbnailsV1)}
+	}
+
+	return a
+}
+
+// Flatten functions for nested configurations
+
+func flattenContextLayerV1Config(config api.ContextLayerV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["import_logs"] = config.ImportLogs
+	a["srid"] = config.Srid
+	a["format"] = config.Format
+	a["fields"] = config.Fields
+	a["file_path"] = config.FilePath
+	a["id_property"] = config.IDProperty
+	return a
+}
+
+func flattenUserContextLayerV1Config(config api.UserContextLayerV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["table"] = config.Table
+	a["import_logs"] = config.ImportLogs
+	a["srid"] = config.Srid
+	a["format"] = config.Format
+	a["fields"] = config.Fields
+	a["file_path"] = config.FilePath
+	a["id_property"] = config.IDProperty
+	a["value_property_id"] = config.ValuePropertyID
+	return a
+}
+
+func flattenTemporalContextLayerV1Config(config api.TemporalContextLayerV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["dataset"] = config.Dataset
+	a["project"] = config.Project
+	a["source"] = config.Source
+	a["table"] = config.Table
+	return a
+}
+
+func flattenUserTracksV1Config(config api.UserTracksV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["file_path"] = config.FilePath
+	a["id_property"] = config.IDProperty
+	return a
+}
+
+func flattenPmTilesV1Config(config api.PmTilesV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["file_path"] = config.FilePath
+	a["id_property"] = config.IDProperty
+	return a
+}
+
+func flattenEventsV1Config(config api.EventsV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["table"] = config.Table
+	a["dataset"] = config.Dataset
+	a["project"] = config.Project
+	a["function"] = config.Function
+	a["ttl"] = config.TTL
+	a["max_zoom"] = config.MaxZoom
+	return a
+}
+
+func flattenFourwingsV1Config(config api.FourwingsV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["report_groupings"] = config.ReportGroupings
+	a["table"] = config.Table
+	a["dataset"] = config.Dataset
+	a["max_zoom"] = config.MaxZoom
+	a["project"] = config.Project
+	a["function"] = config.Function
+	a["intervals"] = config.Intervals
+	a["ttl"] = config.TTL
+	a["max"] = config.Max
+	a["min"] = config.Min
+	a["tile_scale"] = config.TileScale
+	a["tile_offset"] = config.TileOffset
+	a["gee_scale"] = config.GeeScale
+	a["gee_offset"] = config.GeeOffset
+	a["gee_band"] = config.GeeBand
+	a["gee_images"] = config.GeeImages
 	a["interaction_columns"] = config.InteractionColumns
 	a["interaction_group_columns"] = config.InteractionGroupColumns
-	a["max_zoom"] = config.MaxZoom
+	a["temporal_aggregation"] = config.TemporalAggregation
 	a["source"] = config.Source
-	a["function"] = config.Function
-	a["type"] = config.Type
-	a["geometry_column"] = config.GeometryColumn
-	a["database_instance"] = config.DatabaseInstance
-	a["project"] = config.Project
-	a["dataset"] = config.Dataset
-	a["table"] = config.Table
+	return a
+}
+
+func flattenTracksV1Config(config api.TracksV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
 	a["bucket"] = config.Bucket
 	a["folder"] = config.Folder
-	a["intervals"] = config.Intervals
-	a["num_layers"] = config.NumLayers
+	return a
+}
+
+func flattenFrontConfig(config api.FrontConfig) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["max_zoom"] = config.MaxZoom
+	a["translate"] = config.Translate
+	a["max"] = config.Max
+	a["min"] = config.Min
+	a["disable_interaction"] = config.DisableInteraction
+	a["latitude"] = config.Latitude
+	a["longitude"] = config.Longitude
+	a["start_time"] = config.StartTime
+	a["end_time"] = config.EndTime
+	a["timestamp"] = config.Timestamp
+	a["geometry_type"] = config.GeometryType
+	a["source_format"] = config.SourceFormat
+	a["time_filter_type"] = config.TimeFilterType
+	a["value_properties"] = config.ValueProperties
+	a["polygon_color"] = config.PolygonColor
+	a["point_size"] = config.PointSize
+	a["line_id"] = config.LineID
+	a["segment_id"] = config.SegmentID
+	return a
+}
+
+func flattenVesselsV1Config(config api.VesselsV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
 	a["index"] = config.Index
 	a["index_boost"] = config.IndexBoost
-	a["version"] = config.Version
-	a["translate"] = config.Translate
-	a["num_bytes"] = config.NumBytes
-	if config.Documentation != nil {
-		a["documentation"] = []interface{}{flattenDatasetDocumentation(*config.Documentation)}
-	}
+	return a
+}
+
+func flattenInsightsV1Config(config api.InsightsV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
 	if config.InsightSources != nil {
 		a["insight_sources"] = flattenDatasetInsightSources(config.InsightSources)
 	}
-	a["fields"] = config.Fields
-	a["geometry_type"] = config.GeometryType
-	a["property_to_include"] = config.PropertyToInclude
-	if config.PropertyToIncludeRange != nil {
-		a["property_to_include_range"] = []interface{}{flattenDatasetConfigurationRange(*config.PropertyToIncludeRange)}
-	}
-	if config.DOIConfig != nil {
-		a["doi_config"] = []interface{}{flattenDOIConfig(*config.DOIConfig)}
-	}
-	a["file_path"] = config.FilePath
-	a["srid"] = config.Srid
+	return a
+}
+
+func flattenBulkDownloadV1Config(config api.BulkDownloadV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
+	a["gcs_uri"] = config.GcsUri
+	a["path"] = config.Path
 	a["format"] = config.Format
-	a["latitude"] = config.Latitude
-	a["longitude"] = config.Longitude
-	a["timestamp"] = config.Timestamp
+	a["compressed"] = config.Compressed
+	return a
+}
 
-	a["id"] = config.ID
-	a["ttl"] = config.TTL
-	a["gcs_folder"] = config.GcsFolder
+func flattenDataDownloadV1Config(config api.DataDownloadV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
 	a["email_groups"] = config.EmailGroups
-	a["disable_interaction"] = config.DisableInteraction
-	a["images"] = config.Images
-	a["band"] = config.Band
-	a["min"] = config.Min
-	a["max"] = config.Max
-	a["offset"] = config.Offset
-	a["tile_offset"] = config.TileOffset
-	a["scale"] = config.Scale
-	a["tile_scale"] = config.Scale
-	a["value_properties"] = config.ValueProperties
+	a["gcs_folder"] = config.GcsFolder
+	a["doi"] = config.Doi
+	a["concept_doi"] = config.ConceptDOI
+	return a
+}
+
+func flattenThumbnailsV1Config(config api.ThumbnailsV1Config) map[string]interface{} {
+	a := make(map[string]interface{})
 	a["extensions"] = config.Extensions
-	a["id_property"] = config.IDProperty
-
-	if config.ConfigurationUI != nil {
-		jsonStr, err := json.Marshal(config.ConfigurationUI)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		a["configuration_ui"] = string(jsonStr)
-	}
-
-	if config.BulkConfig != nil {
-		jsonStr, err := json.Marshal(config.BulkConfig)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		a["bulk_config"] = string(jsonStr)
-	}
-
+	a["bucket"] = config.Bucket
+	a["folder"] = config.Folder
+	a["scale"] = config.Scale
 	return a
 }
 
@@ -992,18 +1746,6 @@ func flattenRelatedDatasets(relatedDatasets []api.RelatedDataset) []map[string]i
 	}
 
 	return list
-}
-
-func flattenDatasetDocumentation(doc api.DatasetDocumentation) interface{} {
-	a := make(map[string]interface{})
-
-	a["type"] = doc.Type
-	a["enable"] = doc.Enable
-	a["status"] = doc.Status
-	a["queries"] = doc.Queries
-	a["provider"] = doc.Provider
-
-	return a
 }
 
 func flattenDatasetInsightSources(docs []api.InsightSources) interface{} {
@@ -1023,19 +1765,210 @@ func flattenDatasetInsightSources(docs []api.InsightSources) interface{} {
 	return array
 }
 
-func flattenDatasetConfigurationRange(r api.DatasetConfigurationRange) interface{} {
-	a := make(map[string]interface{})
+func schemaToFilterConfig(data map[string]interface{}) api.FilterConfig {
+	filter := api.FilterConfig{}
 
-	a["max"] = r.Max
-	a["min"] = r.Min
+	if v, ok := data["label"].(string); ok {
+		filter.Label = v
+	}
+	if v, ok := data["id"].(string); ok {
+		filter.ID = v
+	}
+	if v, ok := data["type"].(string); ok {
+		filter.Type = v
+	}
+	if v, ok := data["required"].(bool); ok {
+		filter.Required = v
+	}
+	if v, ok := data["array"].(bool); ok {
+		filter.Array = v
+	}
+	if v, ok := data["enum"].([]interface{}); ok && len(v) > 0 {
+		filter.Enum = utils.ConvertArrayInterfaceToArrayString(v)
+	}
+	if v, ok := data["enabled"].(bool); ok {
+		filter.Enabled = v
+	}
+	if v, ok := data["format"].(string); ok {
+		filter.Format = v
+	}
+	if v, ok := data["max_length"].(int); ok {
+		filter.MaxLength = v
+	}
+	if v, ok := data["min_length"].(int); ok {
+		filter.MinLength = v
+	}
+	if v, ok := data["max"].(float64); ok {
+		filter.Max = v
+	}
+	if v, ok := data["min"].(float64); ok {
+		filter.Min = v
+	}
+	if v, ok := data["single_selection"].(bool); ok {
+		filter.SingleSelection = v
+	}
+	if v, ok := data["operation"].(string); ok {
+		filter.Operation = v
+	}
 
-	return a
+	return filter
 }
-func flattenDOIConfig(r api.DOIConfiguration) interface{} {
-	a := make(map[string]interface{})
 
-	a["doi"] = r.DOI
-	a["concept_doi"] = r.ConceptDOI
+func schemaToDatasetFilters(data map[string]interface{}) api.DatasetFilters {
+	filters := api.DatasetFilters{}
 
-	return a
+	if v, ok := data["fourwings"].([]interface{}); ok && len(v) > 0 {
+		fourwingsFilters := make([]api.FilterConfig, len(v))
+		for i, item := range v {
+			fourwingsFilters[i] = schemaToFilterConfig(item.(map[string]interface{}))
+		}
+		filters.Fourwings = fourwingsFilters
+	}
+
+	if v, ok := data["events"].([]interface{}); ok && len(v) > 0 {
+		eventsFilters := make([]api.FilterConfig, len(v))
+		for i, item := range v {
+			eventsFilters[i] = schemaToFilterConfig(item.(map[string]interface{}))
+		}
+		filters.Events = eventsFilters
+	}
+
+	if v, ok := data["vessels"].([]interface{}); ok && len(v) > 0 {
+		vesselsFilters := make([]api.FilterConfig, len(v))
+		for i, item := range v {
+			vesselsFilters[i] = schemaToFilterConfig(item.(map[string]interface{}))
+		}
+		filters.Vessels = vesselsFilters
+	}
+
+	if v, ok := data["tracks"].([]interface{}); ok && len(v) > 0 {
+		tracksFilters := make([]api.FilterConfig, len(v))
+		for i, item := range v {
+			tracksFilters[i] = schemaToFilterConfig(item.(map[string]interface{}))
+		}
+		filters.Tracks = tracksFilters
+	}
+
+	return filters
+}
+
+func flattenFilterConfig(filter api.FilterConfig) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	if filter.Label != "" {
+		result["label"] = filter.Label
+	}
+	if filter.ID != "" {
+		result["id"] = filter.ID
+	}
+	if filter.Type != "" {
+		result["type"] = filter.Type
+	}
+	result["required"] = filter.Required
+	result["array"] = filter.Array
+	if len(filter.Enum) > 0 {
+		result["enum"] = filter.Enum
+	}
+	result["enabled"] = filter.Enabled
+	if filter.Format != "" {
+		result["format"] = filter.Format
+	}
+	if filter.MaxLength != 0 {
+		result["max_length"] = filter.MaxLength
+	}
+	if filter.MinLength != 0 {
+		result["min_length"] = filter.MinLength
+	}
+	if filter.Max != 0 {
+		result["max"] = filter.Max
+	}
+	if filter.Min != 0 {
+		result["min"] = filter.Min
+	}
+	result["single_selection"] = filter.SingleSelection
+	if filter.Operation != "" {
+		result["operation"] = filter.Operation
+	}
+
+	return result
+}
+
+func flattenDatasetFilters(filters api.DatasetFilters) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	if len(filters.Fourwings) > 0 {
+		fourwingsArray := make([]map[string]interface{}, len(filters.Fourwings))
+		for i, filter := range filters.Fourwings {
+			fourwingsArray[i] = flattenFilterConfig(filter)
+		}
+		result["fourwings"] = fourwingsArray
+	}
+
+	if len(filters.Events) > 0 {
+		eventsArray := make([]map[string]interface{}, len(filters.Events))
+		for i, filter := range filters.Events {
+			eventsArray[i] = flattenFilterConfig(filter)
+		}
+		result["events"] = eventsArray
+	}
+
+	if len(filters.Vessels) > 0 {
+		vesselsArray := make([]map[string]interface{}, len(filters.Vessels))
+		for i, filter := range filters.Vessels {
+			vesselsArray[i] = flattenFilterConfig(filter)
+		}
+		result["vessels"] = vesselsArray
+	}
+
+	if len(filters.Tracks) > 0 {
+		tracksArray := make([]map[string]interface{}, len(filters.Tracks))
+		for i, filter := range filters.Tracks {
+			tracksArray[i] = flattenFilterConfig(filter)
+		}
+		result["tracks"] = tracksArray
+	}
+
+	return result
+}
+
+func schemaToDatasetDocumentation(data map[string]interface{}) api.DatasetDocumentation {
+	doc := api.DatasetDocumentation{}
+
+	if v, ok := data["type"].(string); ok {
+		doc.Type = v
+	}
+	if v, ok := data["enable"].(bool); ok {
+		doc.Enable = v
+	}
+	if v, ok := data["status"].(string); ok {
+		doc.Status = v
+	}
+	if v, ok := data["queries"].([]interface{}); ok && len(v) > 0 {
+		doc.Queries = utils.ConvertArrayInterfaceToArrayString(v)
+	}
+	if v, ok := data["provider"].(string); ok {
+		doc.Provider = v
+	}
+
+	return doc
+}
+
+func flattenDatasetDocumentation(doc api.DatasetDocumentation) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	if doc.Type != "" {
+		result["type"] = doc.Type
+	}
+	result["enable"] = doc.Enable
+	if doc.Status != "" {
+		result["status"] = doc.Status
+	}
+	if len(doc.Queries) > 0 {
+		result["queries"] = doc.Queries
+	}
+	if doc.Provider != "" {
+		result["provider"] = doc.Provider
+	}
+
+	return result
 }
