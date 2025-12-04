@@ -92,10 +92,13 @@ var DATASET_STATUSES []string = []string{
 }
 
 var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
-var DATASET_CONFIGURATION_FORMATS []string = []string{"geojson", "pmtile"}
-var DATASET_CONFIGURATION_SOURCE_FORMATS []string = []string{"CSV", "geojson", "pmtile"}
+
+var DATASET_CONTEXT_LAYER_FORMATS []string = []string{"CSV", "GEOJSON", "PMTILE"}
+var DATASET_BULK_DOWNLOAD_FORMATS []string = []string{"CSV", "JSON"}
 var DATASET_4WINGS_INTERVALS []string = []string{"HOUR", "DAY", "MONTH", "YEAR"}
+var DATASET_FRONTEND_FORMATS []string = []string{"GeoJSON", "Shapefile", "CSV", "KML"}
 var DATASET_4WINGS_REPORT_GROUPINGS []string = []string{"id", "mmsi", "geartype", "flag", "flagAndGearType"}
+var DATASET_SOURCE_TYPES []string = []string{"gcs", "bigquery", "clickhouse"}
 
 func filterConfigSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
@@ -271,7 +274,7 @@ func resourceDataset() *schema.Resource {
 									"format": {
 										Type:         schema.TypeString,
 										Optional:     true,
-										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_FORMATS, false),
+										ValidateFunc: validation.StringInSlice(DATASET_CONTEXT_LAYER_FORMATS, false),
 									},
 									"fields": {
 										Elem: &schema.Schema{
@@ -312,7 +315,7 @@ func resourceDataset() *schema.Resource {
 									"format": {
 										Type:         schema.TypeString,
 										Optional:     true,
-										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_FORMATS, false),
+										ValidateFunc: validation.StringInSlice(DATASET_CONTEXT_LAYER_FORMATS, false),
 									},
 									"fields": {
 										Elem: &schema.Schema{
@@ -426,6 +429,11 @@ func resourceDataset() *schema.Resource {
 										Optional: true,
 										Default:  12,
 									},
+									"source": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										ValidateFunc: validation.StringInSlice(DATASET_SOURCE_TYPES, false),
+									},
 								},
 							},
 						},
@@ -492,11 +500,11 @@ func resourceDataset() *schema.Resource {
 										Type:     schema.TypeFloat,
 										Optional: true,
 									},
-									"gee_scale": {
+									"internal_scale": {
 										Type:     schema.TypeFloat,
 										Optional: true,
 									},
-									"gee_offset": {
+									"internal_offset": {
 										Type:     schema.TypeFloat,
 										Optional: true,
 									},
@@ -530,6 +538,15 @@ func resourceDataset() *schema.Resource {
 										Optional: true,
 									},
 									"source": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										ValidateFunc: validation.StringInSlice(DATASET_SOURCE_TYPES, false),
+									},
+									"bucket": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"folder": {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
@@ -608,7 +625,7 @@ func resourceDataset() *schema.Resource {
 									"source_format": {
 										Type:         schema.TypeString,
 										Optional:     true,
-										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_SOURCE_FORMATS, false),
+										ValidateFunc: validation.StringInSlice(DATASET_FRONTEND_FORMATS, false),
 									},
 									"time_filter_type": {
 										Type:     schema.TypeString,
@@ -703,7 +720,7 @@ func resourceDataset() *schema.Resource {
 									"format": {
 										Type:         schema.TypeString,
 										Optional:     true,
-										ValidateFunc: validation.StringInSlice(DATASET_CONFIGURATION_SOURCE_FORMATS, false),
+										ValidateFunc: validation.StringInSlice(DATASET_BULK_DOWNLOAD_FORMATS, false),
 									},
 									"compressed": {
 										Type:     schema.TypeBool,
@@ -1249,6 +1266,9 @@ func schemaToEventsV1Config(schema map[string]interface{}) api.EventsV1Config {
 	if val, ok := schema["max_zoom"]; ok {
 		config.MaxZoom = val.(int)
 	}
+	if val, ok := schema["source"]; ok {
+		config.Source = val.(string)
+	}
 	return config
 }
 
@@ -1290,11 +1310,11 @@ func schemaToFourwingsV1Config(schema map[string]interface{}) api.FourwingsV1Con
 	if val, ok := schema["tile_offset"]; ok {
 		config.TileOffset = val.(float64)
 	}
-	if val, ok := schema["gee_scale"]; ok {
-		config.GeeScale = val.(float64)
+	if val, ok := schema["internal_scale"]; ok {
+		config.InternalScale = val.(float64)
 	}
-	if val, ok := schema["gee_offset"]; ok {
-		config.GeeOffset = val.(float64)
+	if val, ok := schema["internal_offset"]; ok {
+		config.InternalOffset = val.(float64)
 	}
 	if val, ok := schema["gee_band"]; ok {
 		config.GeeBand = val.(string)
@@ -1313,6 +1333,12 @@ func schemaToFourwingsV1Config(schema map[string]interface{}) api.FourwingsV1Con
 	}
 	if val, ok := schema["source"]; ok {
 		config.Source = val.(string)
+	}
+	if val, ok := schema["bucket"]; ok {
+		config.Bucket = val.(string)
+	}
+	if val, ok := schema["folder"]; ok {
+		config.Folder = val.(string)
 	}
 	return config
 }
@@ -1636,6 +1662,7 @@ func flattenEventsV1Config(config api.EventsV1Config) map[string]interface{} {
 	a["function"] = config.Function
 	a["ttl"] = config.TTL
 	a["max_zoom"] = config.MaxZoom
+	a["source"] = config.Source
 	return a
 }
 
@@ -1653,14 +1680,16 @@ func flattenFourwingsV1Config(config api.FourwingsV1Config) map[string]interface
 	a["min"] = config.Min
 	a["tile_scale"] = config.TileScale
 	a["tile_offset"] = config.TileOffset
-	a["gee_scale"] = config.GeeScale
-	a["gee_offset"] = config.GeeOffset
+	a["internal_scale"] = config.InternalScale
+	a["internal_offset"] = config.InternalOffset
 	a["gee_band"] = config.GeeBand
 	a["gee_images"] = config.GeeImages
 	a["interaction_columns"] = config.InteractionColumns
 	a["interaction_group_columns"] = config.InteractionGroupColumns
 	a["temporal_aggregation"] = config.TemporalAggregation
 	a["source"] = config.Source
+	a["bucket"] = config.Bucket
+	a["folder"] = config.Folder
 	return a
 }
 

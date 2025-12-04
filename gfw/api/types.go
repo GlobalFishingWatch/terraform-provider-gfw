@@ -179,6 +179,7 @@ type EventsV1Config struct {
 	Function string `json:"function,omitempty"`
 	TTL      int    `json:"ttl,omitempty"`
 	MaxZoom  int    `json:"maxZoom,omitempty"`
+	Source   string `json:"source,omitempty"`
 }
 
 // 4wings Configuration
@@ -195,14 +196,16 @@ type FourwingsV1Config struct {
 	Min                     float64  `json:"min,omitempty"`
 	TileScale               float64  `json:"tileScale,omitempty"`
 	TileOffset              float64  `json:"tileOffset,omitempty"`
-	GeeScale                float64  `json:"geeScale,omitempty"`
-	GeeOffset               float64  `json:"geeOffset,omitempty"`
+	InternalScale           float64  `json:"internalScale,omitempty"`
+	InternalOffset          float64  `json:"internalOffset,omitempty"`
 	GeeBand                 string   `json:"geeBand,omitempty"`
 	GeeImages               []string `json:"geeImages,omitempty"`
 	InteractionColumns      []string `json:"interactionColumns,omitempty"`
 	InteractionGroupColumns []string `json:"interactionGroupColumns,omitempty"`
 	TemporalAggregation     bool     `json:"temporalAggregation,omitempty"`
 	Source                  string   `json:"source,omitempty"`
+	Bucket                  string   `json:"bucket,omitempty"`
+	Folder                  string   `json:"folder,omitempty"`
 }
 
 // Tracks Configuration
@@ -276,7 +279,7 @@ type DatasetConfiguration struct {
 	UserTracksV1           *UserTracksV1Config           `json:"userTracksV1,omitempty"`
 	PmTilesV1              *PmTilesV1Config              `json:"pmTilesV1,omitempty"`
 	EventsV1               *EventsV1Config               `json:"eventsV1,omitempty"`
-	FourwingsV1            *FourwingsV1Config            `json:"4wingsV1,omitempty"`
+	FourwingsV1            *FourwingsV1Config            `json:"fourwingsV1,omitempty"`
 	TracksV1               *TracksV1Config               `json:"tracksV1,omitempty"`
 	Frontend               *FrontendConfig               `json:"frontend,omitempty"`
 	VesselsV1              *VesselsV1Config              `json:"vesselsV1,omitempty"`
