@@ -103,104 +103,232 @@ type DOIConfiguration struct {
 	DOI        string `json:"doi,omitempty"`
 	ConceptDOI int    `json:"conceptDOI,omitempty"`
 }
+
+// Filter Configuration
+type FilterConfig struct {
+	Label           string   `json:"label,omitempty"`
+	ID              string   `json:"id,omitempty"`
+	Type            string   `json:"type,omitempty"`
+	Required        bool     `json:"required,omitempty"`
+	Array           bool     `json:"array,omitempty"`
+	Enum            []string `json:"enum,omitempty"`
+	Enabled         bool     `json:"enabled,omitempty"`
+	Format          string   `json:"format,omitempty"`
+	MaxLength       int      `json:"maxLength,omitempty"`
+	MinLength       int      `json:"minLength,omitempty"`
+	Max             float64  `json:"max,omitempty"`
+	Min             float64  `json:"min,omitempty"`
+	SingleSelection bool     `json:"singleSelection,omitempty"`
+	Operation       string   `json:"operation,omitempty"`
+}
+
+type DatasetFilters struct {
+	Fourwings []FilterConfig `json:"4wings,omitempty"`
+	Events    []FilterConfig `json:"events,omitempty"`
+	Vessels   []FilterConfig `json:"vessels,omitempty"`
+	Tracks    []FilterConfig `json:"tracks,omitempty"`
+}
+
+// Context Layer Configuration
+type ContextLayerV1Config struct {
+	ImportLogs string   `json:"importLogs,omitempty"`
+	Srid       string   `json:"srid,omitempty"`
+	Format     string   `json:"format,omitempty"`
+	Fields     []string `json:"fields,omitempty"`
+	FilePath   string   `json:"filePath,omitempty"`
+	IDProperty string   `json:"idProperty,omitempty"`
+}
+
+// User Context Layer Configuration
+type UserContextLayerV1Config struct {
+	Table           string   `json:"table,omitempty"`
+	ImportLogs      string   `json:"importLogs,omitempty"`
+	Srid            string   `json:"srid,omitempty"`
+	Format          string   `json:"format,omitempty"`
+	Fields          []string `json:"fields,omitempty"`
+	FilePath        string   `json:"filePath,omitempty"`
+	IDProperty      string   `json:"idProperty,omitempty"`
+	ValuePropertyID string   `json:"valuePropertyId,omitempty"`
+}
+
+// Temporal Context Layer Configuration
+type TemporalContextLayerV1Config struct {
+	Dataset string `json:"dataset,omitempty"`
+	Project string `json:"project,omitempty"`
+	Source  string `json:"source,omitempty"`
+	Table   string `json:"table,omitempty"`
+}
+
+// User Tracks Configuration
+type UserTracksV1Config struct {
+	FilePath   string `json:"filePath,omitempty"`
+	IDProperty string `json:"idProperty,omitempty"`
+}
+
+// PM Tiles Configuration
+type PmTilesV1Config struct {
+	FilePath   string `json:"filePath,omitempty"`
+	IDProperty string `json:"idProperty,omitempty"`
+}
+
+// Events Configuration
+type EventsV1Config struct {
+	Table    string `json:"table,omitempty"`
+	Dataset  string `json:"dataset,omitempty"`
+	Project  string `json:"project,omitempty"`
+	Function string `json:"function,omitempty"`
+	TTL      int    `json:"ttl,omitempty"`
+	MaxZoom  int    `json:"maxZoom,omitempty"`
+	Source   string `json:"source,omitempty"`
+}
+
+// 4wings Configuration
+type FourwingsV1Config struct {
+	ReportGroupings         []string `json:"reportGroupings,omitempty"`
+	Table                   string   `json:"table,omitempty"`
+	Dataset                 string   `json:"dataset,omitempty"`
+	MaxZoom                 int      `json:"maxZoom,omitempty"`
+	Project                 string   `json:"project,omitempty"`
+	Function                string   `json:"function,omitempty"`
+	Intervals               []string `json:"intervals,omitempty"`
+	TTL                     int      `json:"ttl,omitempty"`
+	Max                     float64  `json:"max,omitempty"`
+	Min                     float64  `json:"min,omitempty"`
+	TileScale               float64  `json:"tileScale,omitempty"`
+	TileOffset              float64  `json:"tileOffset,omitempty"`
+	InternalScale           float64  `json:"internalScale,omitempty"`
+	InternalOffset          float64  `json:"internalOffset,omitempty"`
+	GeeBand                 string   `json:"geeBand,omitempty"`
+	GeeImages               []string `json:"geeImages,omitempty"`
+	InteractionColumns      []string `json:"interactionColumns,omitempty"`
+	InteractionGroupColumns []string `json:"interactionGroupColumns,omitempty"`
+	TemporalAggregation     bool     `json:"temporalAggregation,omitempty"`
+	Source                  string   `json:"source,omitempty"`
+	Bucket                  string   `json:"bucket,omitempty"`
+	Folder                  string   `json:"folder,omitempty"`
+}
+
+// Tracks Configuration
+type TracksV1Config struct {
+	Bucket string `json:"bucket,omitempty"`
+	Folder string `json:"folder,omitempty"`
+}
+
+// Frontend Configuration
+type FrontendConfig struct {
+	MaxZoom            int      `json:"maxZoom,omitempty"`
+	Translate          bool     `json:"translate,omitempty"`
+	Max                float64  `json:"max,omitempty"`
+	Min                float64  `json:"min,omitempty"`
+	DisableInteraction bool     `json:"disableInteraction,omitempty"`
+	Latitude           string   `json:"latitude,omitempty"`
+	Longitude          string   `json:"longitude,omitempty"`
+	StartTime          string   `json:"startTime,omitempty"`
+	EndTime            string   `json:"endTime,omitempty"`
+	Timestamp          string   `json:"timestamp,omitempty"`
+	GeometryType       string   `json:"geometryType,omitempty"`
+	SourceFormat       string   `json:"sourceFormat,omitempty"`
+	TimeFilterType     string   `json:"timeFilterType,omitempty"`
+	ValueProperties    []string `json:"valueProperties,omitempty"`
+	PolygonColor       string   `json:"polygonColor,omitempty"`
+	PointSize          string   `json:"pointSize,omitempty"`
+	LineID             string   `json:"lineId,omitempty"`
+	SegmentID          string   `json:"segmentId,omitempty"`
+}
+
+// Vessels Configuration
+type VesselsV1Config struct {
+	Index      string  `json:"index,omitempty"`
+	IndexBoost float64 `json:"indexBoost,omitempty"`
+}
+
+// Insights Configuration
+type InsightsV1Config struct {
+	Sources []InsightSources `json:"sources,omitempty"`
+}
+
+// Bulk Download Configuration
+type BulkDownloadV1Config struct {
+	GcsUri     string `json:"gcsUri,omitempty"`
+	Path       string `json:"path,omitempty"`
+	Format     string `json:"format,omitempty"`
+	Compressed bool   `json:"compressed,omitempty"`
+}
+
+// Data Download Configuration
+type DataDownloadV1Config struct {
+	EmailGroups []string `json:"emailGroups,omitempty"`
+	GcsFolder   string   `json:"gcsFolder,omitempty"`
+	Doi         string   `json:"doi,omitempty"`
+	ConceptDOI  int      `json:"conceptDOI,omitempty"`
+}
+
+// Thumbnails Configuration
+type ThumbnailsV1Config struct {
+	Extensions []string `json:"extensions,omitempty"`
+	Bucket     string   `json:"bucket,omitempty"`
+	Folder     string   `json:"folder,omitempty"`
+	Scale      float64  `json:"scale,omitempty"`
+}
+
 type DatasetConfiguration struct {
-	ApiSupportedVersions    []string                   `json:"apiSupportedVersions,omitempty"`
-	InteractionColumns      []string                   `json:"interactionColumns,omitempty"`
-	InteractionGroupColumns []string                   `json:"interactionGroupColumns,omitempty"`
-	MaxZoom                 int                        `json:"maxZoom,omitempty"`
-	Source                  string                     `json:"source,omitempty"`
-	Function                string                     `json:"function,omitempty"`
-	Type                    string                     `json:"type,omitempty"`
-	GeometryColumn          string                     `json:"geometryColumn,omitempty"`
-	DatabaseInstance        string                     `json:"databaseInstance,omitempty"`
-	Project                 string                     `json:"project,omitempty"`
-	Dataset                 string                     `json:"dataset,omitempty"`
-	Table                   string                     `json:"table,omitempty"`
-	Bucket                  string                     `json:"bucket,omitempty"`
-	Folder                  string                     `json:"folder,omitempty"`
-	Intervals               []string                   `json:"intervals,omitempty"`
-	NumLayers               int                        `json:"numLayers,omitempty"`
-	Index                   string                     `json:"index,omitempty"`
-	IndexBoost              float64                    `json:"indexBoost,omitempty"`
-	Version                 int                        `json:"version,omitempty"`
-	Translate               bool                       `json:"translate,omitempty"`
-	Doi                     bool                       `json:"doi,omitempty"`
-	Documentation           *DatasetDocumentation      `json:"documentation,omitempty"`
-	Fields                  []string                   `json:"fields,omitempty"`
-	GeometryType            string                     `json:"geometryType,omitempty"`
-	PropertyToInclude       string                     `json:"propertyToInclude,omitempty"`
-	PropertyToIncludeRange  *DatasetConfigurationRange `json:"propertyToIncludeRange,omitempty"`
-	DOIConfig               *DOIConfiguration          `json:"doiConfig,omitempty"`
-	FilePath                string                     `json:"filePath,omitempty"`
-	Srid                    string                     `json:"srid,omitempty"`
-	Format                  string                     `json:"format,omitempty"`
-	Latitude                string                     `json:"latitude,omitempty"`
-	Longitude               string                     `json:"longitude,omitempty"`
-	Timestamp               string                     `json:"timestamp,omitempty"`
-	NumBytes                int                        `json:"numBytes,omitempty"`
-	ID                      string                     `json:"id"`
-	TTL                     int                        `json:"ttl"`
-	GcsFolder               string                     `json:"gcsFolder"`
-	EmailGroups             []string                   `json:"emailGroups"`
-	DisableInteraction      bool                       `json:"disableInteraction"`
-	Images                  []string                   `json:"images"`
-	Band                    string                     `json:"band"`
-	Min                     float64                    `json:"min"`
-	Max                     float64                    `json:"max"`
-	Scale                   float64                    `json:"scale"`
-	Offset                  float64                    `json:"offset"`
-	TileScale               float64                    `json:"tileScale,omitempty"`
-	TileOffset              float64                    `json:"tileOffset,omitempty"`
-	IDProperty              string                     `json:"idProperty"`
-	ValueProperties         []string                   `json:"valueProperties"`
-	Extensions              []string                   `json:"extensions"`
-	InsightSources          []InsightSources           `json:"insightSources,omitempty"`
-	ConfigurationUI         *map[string]interface{}    `json:"configurationUI,omitempty"`
-	BulkConfig              *map[string]interface{}    `json:"bulkConfig,omitempty"`
+	ApiSupportedVersions   []string                      `json:"apiSupportedVersions,omitempty"`
+	ContextLayerV1         *ContextLayerV1Config         `json:"contextLayerV1,omitempty"`
+	UserContextLayerV1     *UserContextLayerV1Config     `json:"userContextLayerV1,omitempty"`
+	TemporalContextLayerV1 *TemporalContextLayerV1Config `json:"temporalContextLayerV1,omitempty"`
+	UserTracksV1           *UserTracksV1Config           `json:"userTracksV1,omitempty"`
+	PmTilesV1              *PmTilesV1Config              `json:"pmTilesV1,omitempty"`
+	EventsV1               *EventsV1Config               `json:"eventsV1,omitempty"`
+	FourwingsV1            *FourwingsV1Config            `json:"fourwingsV1,omitempty"`
+	TracksV1               *TracksV1Config               `json:"tracksV1,omitempty"`
+	Frontend               *FrontendConfig               `json:"frontend,omitempty"`
+	VesselsV1              *VesselsV1Config              `json:"vesselsV1,omitempty"`
+	InsightsV1             *InsightsV1Config             `json:"insightsV1,omitempty"`
+	BulkDownloadV1         *BulkDownloadV1Config         `json:"bulkDownloadV1,omitempty"`
+	DataDownloadV1         *DataDownloadV1Config         `json:"dataDownloadV1,omitempty"`
+	ThumbnailsV1           *ThumbnailsV1Config           `json:"thumbnailsV1,omitempty"`
 }
 type RelatedDataset struct {
 	ID   string `json:"id"`
 	Type string `json:"type"`
 }
 type Dataset struct {
-	ID              string                  `json:"id"`
-	Name            string                  `json:"name"`
-	Description     string                  `json:"description"`
-	CreatedAt       string                  `json:"createdAt"`
-	Type            string                  `json:"type"`
-	Alias           []string                `json:"alias"`
-	StartDate       string                  `json:"startDate"`
-	EndDate         string                  `json:"endDate"`
-	Unit            string                  `json:"unit"`
-	Status          string                  `json:"status"`
-	Category        string                  `json:"category"`
-	Subcategory     string                  `json:"subcategory"`
-	Source          string                  `json:"source"`
-	Configuration   *DatasetConfiguration   `json:"configuration"`
-	RelatedDatasets []RelatedDataset        `json:"relatedDatasets"`
-	Schema          *map[string]interface{} `json:"schema"`
-	Filters         *map[string]interface{} `json:"filters"`
-	FieldsAllowed   []string                `json:"fieldsAllowed"`
+	ID              string                `json:"id"`
+	Name            string                `json:"name"`
+	Description     string                `json:"description"`
+	CreatedAt       string                `json:"createdAt"`
+	Type            string                `json:"type"`
+	Alias           []string              `json:"alias"`
+	StartDate       string                `json:"startDate"`
+	EndDate         string                `json:"endDate"`
+	Unit            string                `json:"unit"`
+	Status          string                `json:"status"`
+	Category        string                `json:"category"`
+	Subcategory     string                `json:"subcategory"`
+	Source          string                `json:"source"`
+	Configuration   *DatasetConfiguration `json:"configuration"`
+	RelatedDatasets []RelatedDataset      `json:"relatedDatasets"`
+	Filters         *DatasetFilters       `json:"filters,omitempty"`
+	Documentation   *DatasetDocumentation `json:"documentation,omitempty"`
 }
 
 type CreateDataset struct {
-	ID              string                  `json:"id,omitempty"`
-	Name            string                  `json:"name,omitempty"`
-	Description     string                  `json:"description,omitempty"`
-	Type            string                  `json:"type,omitempty"`
-	Alias           []string                `json:"alias,omitempty"`
-	StartDate       string                  `json:"startDate,omitempty"`
-	EndDate         string                  `json:"endDate,omitempty"`
-	Unit            string                  `json:"unit,omitempty"`
-	Status          string                  `json:"status,omitempty"`
-	Category        string                  `json:"category,omitempty"`
-	Subcategory     string                  `json:"subcategory,omitempty"`
-	Source          string                  `json:"source,omitempty"`
-	Configuration   *DatasetConfiguration   `json:"configuration,omitempty"`
-	RelatedDatasets []RelatedDataset        `json:"relatedDatasets,omitempty"`
-	Schema          *map[string]interface{} `json:"schema,omitempty"`
-	Filters         *map[string]interface{} `json:"filters,omitempty"`
-	FieldsAllowed   []string                `json:"fieldsAllowed,omitempty"`
+	ID              string                `json:"id,omitempty"`
+	Name            string                `json:"name,omitempty"`
+	Description     string                `json:"description,omitempty"`
+	Type            string                `json:"type,omitempty"`
+	Alias           []string              `json:"alias,omitempty"`
+	StartDate       string                `json:"startDate,omitempty"`
+	EndDate         string                `json:"endDate,omitempty"`
+	Unit            string                `json:"unit,omitempty"`
+	Status          string                `json:"status,omitempty"`
+	Category        string                `json:"category,omitempty"`
+	Subcategory     string                `json:"subcategory,omitempty"`
+	Source          string                `json:"source,omitempty"`
+	Configuration   *DatasetConfiguration `json:"configuration,omitempty"`
+	RelatedDatasets []RelatedDataset      `json:"relatedDatasets,omitempty"`
+	Filters         *DatasetFilters       `json:"filters,omitempty"`
+	Documentation   *DatasetDocumentation `json:"documentation,omitempty"`
 }
 
 type DataviewLayer struct {

@@ -96,6 +96,8 @@ func (c *GFWClient) CreateDataset(dataset CreateDataset) (*Dataset, error) {
 	if err != nil {
 		return nil, err
 	}
+	data := string(bodyReq)
+	fmt.Println(data)
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", c.HostURL, DATASET_PATH), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
