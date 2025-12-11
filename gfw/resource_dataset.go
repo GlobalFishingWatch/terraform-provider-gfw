@@ -681,6 +681,10 @@ func resourceDataset() *schema.Resource {
 										Type:     schema.TypeFloat,
 										Optional: true,
 									},
+									"table": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 								},
 							},
 						},
@@ -1432,6 +1436,9 @@ func schemaToVesselsV1Config(schema map[string]interface{}) api.VesselsV1Config 
 	if val, ok := schema["index_boost"]; ok {
 		config.IndexBoost = val.(float64)
 	}
+	if val, ok := schema["table"]; ok {
+		config.Table = val.(string)
+	}
 	return config
 }
 
@@ -1740,6 +1747,7 @@ func flattenVesselsV1Config(config api.VesselsV1Config) map[string]interface{} {
 	a := make(map[string]interface{})
 	a["index"] = config.Index
 	a["index_boost"] = config.IndexBoost
+	a["table"] = config.Table
 	return a
 }
 

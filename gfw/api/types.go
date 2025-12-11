@@ -242,6 +242,7 @@ type FrontendConfig struct {
 type VesselsV1Config struct {
 	Index      string  `json:"index,omitempty"`
 	IndexBoost float64 `json:"indexBoost,omitempty"`
+	Table      string  `json:"table,omitempty"`
 }
 
 // Insights Configuration
