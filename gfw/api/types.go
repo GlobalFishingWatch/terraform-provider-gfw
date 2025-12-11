@@ -210,8 +210,10 @@ type FourwingsV1Config struct {
 
 // Tracks Configuration
 type TracksV1Config struct {
-	Bucket string `json:"bucket,omitempty"`
-	Folder string `json:"folder,omitempty"`
+	Bucket           string `json:"bucket,omitempty"`
+	Folder           string `json:"folder,omitempty"`
+	DatabaseInstance string `json:"databaseInstance,omitempty"`
+	Table            string `json:"table,omitempty"`
 }
 
 // Frontend Configuration
