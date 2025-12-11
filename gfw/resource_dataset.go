@@ -93,7 +93,7 @@ var DATASET_STATUSES []string = []string{
 
 var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons", "points"}
 
-var DATASET_CONTEXT_LAYER_FORMATS []string = []string{"CSV", "GEOJSON", "PMTILE"}
+var DATASET_CONTEXT_LAYER_FORMATS []string = []string{"csv", "geojson", "pmtile"}
 var DATASET_BULK_DOWNLOAD_FORMATS []string = []string{"CSV", "JSON"}
 var DATASET_4WINGS_INTERVALS []string = []string{"HOUR", "DAY", "MONTH", "YEAR"}
 var DATASET_FRONTEND_FORMATS []string = []string{"GeoJSON", "Shapefile", "CSV", "KML"}
@@ -117,6 +117,7 @@ func filterConfigSchema() map[string]*schema.Schema {
 		"required": {
 			Type:     schema.TypeBool,
 			Optional: true,
+			Default:  false,
 		},
 		"array": {
 			Type:     schema.TypeBool,
@@ -130,6 +131,7 @@ func filterConfigSchema() map[string]*schema.Schema {
 		"enabled": {
 			Type:     schema.TypeBool,
 			Optional: true,
+			Default:  true,
 		},
 		"format": {
 			Type:     schema.TypeString,
@@ -154,6 +156,7 @@ func filterConfigSchema() map[string]*schema.Schema {
 		"single_selection": {
 			Type:     schema.TypeBool,
 			Optional: true,
+			Default:  false,
 		},
 		"operation": {
 			Type:     schema.TypeString,
@@ -538,9 +541,8 @@ func resourceDataset() *schema.Resource {
 										Optional: true,
 									},
 									"source": {
-										Type:         schema.TypeString,
-										Optional:     true,
-										ValidateFunc: validation.StringInSlice(DATASET_SOURCE_TYPES, false),
+										Type:     schema.TypeString,
+										Optional: true,
 									},
 									"bucket": {
 										Type:     schema.TypeString,
@@ -564,6 +566,14 @@ func resourceDataset() *schema.Resource {
 										Optional: true,
 									},
 									"folder": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"database_instance": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"table": {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
@@ -855,11 +865,6 @@ func resourceDataset() *schema.Resource {
 					},
 				},
 			},
-			"created_at": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
 		},
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(5 * time.Minute),
@@ -997,7 +1002,7 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 	if d.Get("configuration") != nil {
 		configuration := d.Get("configuration").([]interface{})
 		if len(configuration) > 0 {
-			config := schemaToDatasetConfiguration(configuration[0].(map[string]interface{}))
+			config := schemaToDatasetConfiguration(configuration[0].(map[string]interface{}), d.Get("name").(string))
 			dataset.Configuration = &config
 		}
 	}
@@ -1016,7 +1021,7 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 	return dataset, nil
 }
 
-func schemaToDatasetConfiguration(schema map[string]interface{}) api.DatasetConfiguration {
+func schemaToDatasetConfiguration(schema map[string]interface{}, name string) api.DatasetConfiguration {
 	config := api.DatasetConfiguration{}
 
 	// API Supported Versions
@@ -1350,6 +1355,12 @@ func schemaToTracksV1Config(schema map[string]interface{}) api.TracksV1Config {
 	}
 	if val, ok := schema["folder"]; ok {
 		config.Folder = val.(string)
+	}
+	if val, ok := schema["database_instance"]; ok {
+		config.DatabaseInstance = val.(string)
+	}
+	if val, ok := schema["table"]; ok {
+		config.Table = val.(string)
 	}
 	return config
 }
@@ -1697,6 +1708,8 @@ func flattenTracksV1Config(config api.TracksV1Config) map[string]interface{} {
 	a := make(map[string]interface{})
 	a["bucket"] = config.Bucket
 	a["folder"] = config.Folder
+	a["database_instance"] = config.DatabaseInstance
+	a["table"] = config.Table
 	return a
 }
 
