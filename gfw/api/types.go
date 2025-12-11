@@ -171,6 +171,12 @@ type PmTilesV1Config struct {
 	IDProperty string `json:"idProperty,omitempty"`
 }
 
+// Extra Property Position Tiles
+type ExtraPropertyPositionTiles struct {
+	ID   string `json:"id,omitempty"`
+	Type string `json:"type,omitempty"`
+}
+
 // Events Configuration
 type EventsV1Config struct {
 	Table    string `json:"table,omitempty"`
@@ -184,28 +190,29 @@ type EventsV1Config struct {
 
 // 4wings Configuration
 type FourwingsV1Config struct {
-	ReportGroupings         []string `json:"reportGroupings,omitempty"`
-	Table                   string   `json:"table,omitempty"`
-	Dataset                 string   `json:"dataset,omitempty"`
-	MaxZoom                 int      `json:"maxZoom,omitempty"`
-	Project                 string   `json:"project,omitempty"`
-	Function                string   `json:"function,omitempty"`
-	Intervals               []string `json:"intervals,omitempty"`
-	TTL                     int      `json:"ttl,omitempty"`
-	Max                     float64  `json:"max,omitempty"`
-	Min                     float64  `json:"min,omitempty"`
-	TileScale               float64  `json:"tileScale,omitempty"`
-	TileOffset              float64  `json:"tileOffset,omitempty"`
-	InternalScale           float64  `json:"internalScale,omitempty"`
-	InternalOffset          float64  `json:"internalOffset,omitempty"`
-	GeeBand                 string   `json:"geeBand,omitempty"`
-	GeeImages               []string `json:"geeImages,omitempty"`
-	InteractionColumns      []string `json:"interactionColumns,omitempty"`
-	InteractionGroupColumns []string `json:"interactionGroupColumns,omitempty"`
-	TemporalAggregation     bool     `json:"temporalAggregation,omitempty"`
-	Source                  string   `json:"source,omitempty"`
-	Bucket                  string   `json:"bucket,omitempty"`
-	Folder                  string   `json:"folder,omitempty"`
+	ExtraPropertiesPositionTiles []ExtraPropertyPositionTiles `json:"extraPropertiesPositionTiles,omitempty"`
+	ReportGroupings              []string                     `json:"reportGroupings,omitempty"`
+	Table                        string                       `json:"table,omitempty"`
+	Dataset                      string                       `json:"dataset,omitempty"`
+	MaxZoom                      int                          `json:"maxZoom,omitempty"`
+	Project                      string                       `json:"project,omitempty"`
+	Function                     string                       `json:"function,omitempty"`
+	Intervals                    []string                     `json:"intervals,omitempty"`
+	TTL                          int                          `json:"ttl,omitempty"`
+	Max                          float64                      `json:"max,omitempty"`
+	Min                          float64                      `json:"min,omitempty"`
+	TileScale                    float64                      `json:"tileScale,omitempty"`
+	TileOffset                   float64                      `json:"tileOffset,omitempty"`
+	InternalScale                float64                      `json:"internalScale,omitempty"`
+	InternalOffset               float64                      `json:"internalOffset,omitempty"`
+	GeeBand                      string                       `json:"geeBand,omitempty"`
+	GeeImages                    []string                     `json:"geeImages,omitempty"`
+	InteractionColumns           []string                     `json:"interactionColumns,omitempty"`
+	InteractionGroupColumns      []string                     `json:"interactionGroupColumns,omitempty"`
+	TemporalAggregation          bool                         `json:"temporalAggregation,omitempty"`
+	Source                       string                       `json:"source,omitempty"`
+	Bucket                       string                       `json:"bucket,omitempty"`
+	Folder                       string                       `json:"folder,omitempty"`
 }
 
 // Tracks Configuration

@@ -97,7 +97,7 @@ var DATASET_CONTEXT_LAYER_FORMATS []string = []string{"csv", "geojson", "pmtile"
 var DATASET_BULK_DOWNLOAD_FORMATS []string = []string{"CSV", "JSON"}
 var DATASET_4WINGS_INTERVALS []string = []string{"HOUR", "DAY", "MONTH", "YEAR"}
 var DATASET_FRONTEND_FORMATS []string = []string{"GeoJSON", "Shapefile", "CSV", "KML"}
-var DATASET_4WINGS_REPORT_GROUPINGS []string = []string{"id", "mmsi", "geartype", "flag", "flagAndGearType"}
+var DATASET_4WINGS_REPORT_GROUPINGS []string = []string{"vessel_id", "mmsi", "geartype", "flag", "flagAndGearType"}
 var DATASET_SOURCE_TYPES []string = []string{"gcs", "bigquery", "clickhouse"}
 
 func filterConfigSchema() map[string]*schema.Schema {
@@ -159,6 +159,19 @@ func filterConfigSchema() map[string]*schema.Schema {
 			Default:  false,
 		},
 		"operation": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+	}
+}
+
+func extraPropertyPositionTilesConfigSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"id": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"type": {
 			Type:     schema.TypeString,
 			Optional: true,
 		},
@@ -446,6 +459,13 @@ func resourceDataset() *schema.Resource {
 							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"extra_properties_position_tiles": {
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: extraPropertyPositionTilesConfigSchema(),
+										},
+									},
 									"report_groupings": {
 										Elem: &schema.Schema{
 											Type:         schema.TypeString,
@@ -680,6 +700,7 @@ func resourceDataset() *schema.Resource {
 									"index_boost": {
 										Type:     schema.TypeFloat,
 										Optional: true,
+										Default:  1,
 									},
 									"table": {
 										Type:     schema.TypeString,
@@ -1283,6 +1304,20 @@ func schemaToEventsV1Config(schema map[string]interface{}) api.EventsV1Config {
 
 func schemaToFourwingsV1Config(schema map[string]interface{}) api.FourwingsV1Config {
 	config := api.FourwingsV1Config{}
+	if val, ok := schema["extra_properties_position_tiles"]; ok {
+		extraPropsArray := val.([]interface{})
+		if len(extraPropsArray) > 0 {
+			extraProps := make([]api.ExtraPropertyPositionTiles, len(extraPropsArray))
+			for i, prop := range extraPropsArray {
+				propMap := prop.(map[string]interface{})
+				extraProps[i] = api.ExtraPropertyPositionTiles{
+					ID:   propMap["id"].(string),
+					Type: propMap["type"].(string),
+				}
+			}
+			config.ExtraPropertiesPositionTiles = extraProps
+		}
+	}
 	if val, ok := schema["report_groupings"]; ok {
 		config.ReportGroupings = utils.ConvertArrayInterfaceToArrayString(val.([]interface{}))
 	}
@@ -1686,6 +1721,16 @@ func flattenEventsV1Config(config api.EventsV1Config) map[string]interface{} {
 
 func flattenFourwingsV1Config(config api.FourwingsV1Config) map[string]interface{} {
 	a := make(map[string]interface{})
+	if len(config.ExtraPropertiesPositionTiles) > 0 {
+		extraProps := make([]map[string]interface{}, len(config.ExtraPropertiesPositionTiles))
+		for i, prop := range config.ExtraPropertiesPositionTiles {
+			extraProps[i] = map[string]interface{}{
+				"id":   prop.ID,
+				"type": prop.Type,
+			}
+		}
+		a["extra_properties_position_tiles"] = extraProps
+	}
 	a["report_groupings"] = config.ReportGroupings
 	a["table"] = config.Table
 	a["dataset"] = config.Dataset
