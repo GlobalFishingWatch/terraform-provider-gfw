@@ -760,6 +760,15 @@ func resourceDataset() *schema.Resource {
 									"compressed": {
 										Type:     schema.TypeBool,
 										Optional: true,
+										Default:  false,
+									},
+									"latitude_property": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"longitude_property": {
+										Type:     schema.TypeString,
+										Optional: true,
 									},
 								},
 							},
@@ -1506,6 +1515,12 @@ func schemaToBulkDownloadV1Config(schema map[string]interface{}) api.BulkDownloa
 	if val, ok := schema["compressed"]; ok {
 		config.Compressed = val.(bool)
 	}
+	if val, ok := schema["latitude_property"]; ok {
+		config.LatitudeProperty = val.(string)
+	}
+	if val, ok := schema["longitude_property"]; ok {
+		config.LongitudeProperty = val.(string)
+	}
 	return config
 }
 
@@ -1810,6 +1825,8 @@ func flattenBulkDownloadV1Config(config api.BulkDownloadV1Config) map[string]int
 	a["path"] = config.Path
 	a["format"] = config.Format
 	a["compressed"] = config.Compressed
+	a["latitude_property"] = config.LatitudeProperty
+	a["longitude_property"] = config.LongitudeProperty
 	return a
 }
 

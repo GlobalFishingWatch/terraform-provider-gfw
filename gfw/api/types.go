@@ -259,10 +259,12 @@ type InsightsV1Config struct {
 
 // Bulk Download Configuration
 type BulkDownloadV1Config struct {
-	GcsUri     string `json:"gcsUri,omitempty"`
-	Path       string `json:"path,omitempty"`
-	Format     string `json:"format,omitempty"`
-	Compressed bool   `json:"compressed,omitempty"`
+	GcsUri            string `json:"gcsUri,omitempty"`
+	Path              string `json:"path,omitempty"`
+	Format            string `json:"format,omitempty"`
+	Compressed        bool   `json:"compressed,omitempty"`
+	LatitudeProperty  string `json:"latitudeProperty,omitempty"`
+	LongitudeProperty string `json:"longitudeProperty,omitempty"`
 }
 
 // Data Download Configuration
