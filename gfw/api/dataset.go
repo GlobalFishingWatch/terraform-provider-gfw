@@ -10,7 +10,7 @@ import (
 const DATASET_PATH = "datasets"
 
 func (c *GFWClient) GetDatasets() (*[]Dataset, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, DATASET_PATH), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s?includes[0]=BACKEND_CONFIGURATION&cache=false", c.HostURL, DATASET_PATH), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (c *GFWClient) GetDatasets() (*[]Dataset, error) {
 }
 
 func (c *GFWClient) GetDataset(id string) (*Dataset, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/%s", c.HostURL, DATASET_PATH, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION&cache=false", c.HostURL, DATASET_PATH, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (c *GFWClient) GetDataset(id string) (*Dataset, error) {
 }
 
 func (c *GFWClient) DeleteDataset(id string) (*Dataset, error) {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/%s", c.HostURL, DATASET_PATH, id), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION", c.HostURL, DATASET_PATH, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (c *GFWClient) UpdateDataset(id string, dataset CreateDataset) error {
 		return err
 	}
 	fmt.Println(string(bodyReq))
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s/%s", c.HostURL, DATASET_PATH, id), strings.NewReader(string(bodyReq)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION", c.HostURL, DATASET_PATH, id), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
 		return err
