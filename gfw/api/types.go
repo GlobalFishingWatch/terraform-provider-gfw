@@ -123,7 +123,7 @@ type FilterConfig struct {
 }
 
 type DatasetFilters struct {
-	Fourwings []FilterConfig `json:"4wings,omitempty"`
+	Fourwings []FilterConfig `json:"fourwings,omitempty"`
 	Events    []FilterConfig `json:"events,omitempty"`
 	Vessels   []FilterConfig `json:"vessels,omitempty"`
 	Tracks    []FilterConfig `json:"tracks,omitempty"`
