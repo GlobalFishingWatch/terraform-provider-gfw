@@ -984,6 +984,8 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 		if err := d.Set("filters", []interface{}{filters}); err != nil {
 			return diag.FromErr(err)
 		}
+	} else {
+		d.Set("filters", nil)
 	}
 
 	if dataset.Configuration != nil {
@@ -998,6 +1000,8 @@ func resourceDatasetRead(ctx context.Context, d *schema.ResourceData, m interfac
 		if err := d.Set("documentation", []interface{}{documentation}); err != nil {
 			return diag.FromErr(err)
 		}
+	} else {
+		d.Set("documentation", nil)
 	}
 
 	relatedDatasets := flattenRelatedDatasets(dataset.RelatedDatasets)
@@ -1052,8 +1056,6 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 		if len(filtersList) > 0 {
 			filters := schemaToDatasetFilters(filtersList[0].(map[string]interface{}))
 			dataset.Filters = &filters
-		} else {
-			dataset.Filters = &api.DatasetFilters{}
 		}
 	}
 	if d.Get("configuration") != nil {

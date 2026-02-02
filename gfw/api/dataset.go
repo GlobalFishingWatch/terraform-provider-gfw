@@ -73,6 +73,7 @@ func (c *GFWClient) UpdateDataset(id string, dataset CreateDataset) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(bodyReq))
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION", c.HostURL, DATASET_PATH, id), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
