@@ -123,10 +123,13 @@ type FilterConfig struct {
 }
 
 type DatasetFilters struct {
-	Fourwings []FilterConfig `json:"fourwings,omitempty"`
-	Events    []FilterConfig `json:"events,omitempty"`
-	Vessels   []FilterConfig `json:"vessels,omitempty"`
-	Tracks    []FilterConfig `json:"tracks,omitempty"`
+	Fourwings         []FilterConfig `json:"fourwings,omitempty"`
+	Events            []FilterConfig `json:"events,omitempty"`
+	Vessels           []FilterConfig `json:"vessels,omitempty"`
+	Tracks            []FilterConfig `json:"tracks,omitempty"`
+	UserTracks        []FilterConfig `json:"userTracks,omitempty"`
+	UserContextLayers []FilterConfig `json:"userContextLayers,omitempty"`
+	ContextLayers     []FilterConfig `json:"contextLayers,omitempty"`
 }
 
 // Context Layer Configuration

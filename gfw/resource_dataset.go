@@ -866,6 +866,27 @@ func resourceDataset() *schema.Resource {
 								Schema: filterConfigSchema(),
 							},
 						},
+						"user_context_layers": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: filterConfigSchema(),
+							},
+						},
+						"context_layers": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: filterConfigSchema(),
+							},
+						},
+						"user_tracks": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: filterConfigSchema(),
+							},
+						},
 					},
 				},
 			},
@@ -1960,6 +1981,27 @@ func schemaToDatasetFilters(data map[string]interface{}) api.DatasetFilters {
 		}
 		filters.Tracks = tracksFilters
 	}
+	if v, ok := data["user_tracks"].([]interface{}); ok && len(v) > 0 {
+		userTrackFilters := make([]api.FilterConfig, len(v))
+		for i, item := range v {
+			userTrackFilters[i] = schemaToFilterConfig(item.(map[string]interface{}))
+		}
+		filters.UserTracks = userTrackFilters
+	}
+	if v, ok := data["user_context_layers"].([]interface{}); ok && len(v) > 0 {
+		userContextLayerFilters := make([]api.FilterConfig, len(v))
+		for i, item := range v {
+			userContextLayerFilters[i] = schemaToFilterConfig(item.(map[string]interface{}))
+		}
+		filters.UserContextLayers = userContextLayerFilters
+	}
+	if v, ok := data["context_layers"].([]interface{}); ok && len(v) > 0 {
+		contextLayerFilters := make([]api.FilterConfig, len(v))
+		for i, item := range v {
+			contextLayerFilters[i] = schemaToFilterConfig(item.(map[string]interface{}))
+		}
+		filters.ContextLayers = contextLayerFilters
+	}
 
 	return filters
 }
@@ -2038,6 +2080,27 @@ func flattenDatasetFilters(filters api.DatasetFilters) map[string]interface{} {
 			tracksArray[i] = flattenFilterConfig(filter)
 		}
 		result["tracks"] = tracksArray
+	}
+	if len(filters.UserTracks) > 0 {
+		userTracksArray := make([]map[string]interface{}, len(filters.UserTracks))
+		for i, filter := range filters.UserTracks {
+			userTracksArray[i] = flattenFilterConfig(filter)
+		}
+		result["user_tracks"] = userTracksArray
+	}
+	if len(filters.UserContextLayers) > 0 {
+		userContextLayersArray := make([]map[string]interface{}, len(filters.UserContextLayers))
+		for i, filter := range filters.UserContextLayers {
+			userContextLayersArray[i] = flattenFilterConfig(filter)
+		}
+		result["user_context_layers"] = userContextLayersArray
+	}
+	if len(filters.ContextLayers) > 0 {
+		contextLayersArray := make([]map[string]interface{}, len(filters.ContextLayers))
+		for i, filter := range filters.ContextLayers {
+			contextLayersArray[i] = flattenFilterConfig(filter)
+		}
+		result["context_layers"] = contextLayersArray
 	}
 
 	return result
