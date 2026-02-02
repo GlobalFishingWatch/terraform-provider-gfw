@@ -1052,6 +1052,8 @@ func schemaToDataset(d *schema.ResourceData) (api.CreateDataset, error) {
 		if len(filtersList) > 0 {
 			filters := schemaToDatasetFilters(filtersList[0].(map[string]interface{}))
 			dataset.Filters = &filters
+		} else {
+			dataset.Filters = &api.DatasetFilters{}
 		}
 	}
 	if d.Get("configuration") != nil {
