@@ -323,7 +323,7 @@ type Dataset struct {
 	Source          string                `json:"source"`
 	Configuration   *DatasetConfiguration `json:"configuration"`
 	RelatedDatasets []RelatedDataset      `json:"relatedDatasets"`
-	Filters         *DatasetFilters       `json:"filters,omitempty"`
+	Filters         DatasetFilters        `json:"filters"`
 	Documentation   *DatasetDocumentation `json:"documentation,omitempty"`
 }
 
