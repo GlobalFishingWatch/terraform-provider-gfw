@@ -120,6 +120,7 @@ type FilterConfig struct {
 	Min             float64  `json:"min,omitempty"`
 	SingleSelection bool     `json:"singleSelection,omitempty"`
 	Operation       string   `json:"operation,omitempty"`
+	Unit            string   `json:"unit,omitempty"`
 }
 
 type DatasetFilters struct {

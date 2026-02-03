@@ -162,6 +162,10 @@ func filterConfigSchema() map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Optional: true,
 		},
+		"unit": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
 	}
 }
 
@@ -1947,6 +1951,9 @@ func schemaToFilterConfig(data map[string]interface{}) api.FilterConfig {
 	if v, ok := data["operation"].(string); ok {
 		filter.Operation = v
 	}
+	if v, ok := data["unit"].(string); ok {
+		filter.Unit = v
+	}
 
 	return filter
 }
@@ -2046,6 +2053,9 @@ func flattenFilterConfig(filter api.FilterConfig) map[string]interface{} {
 	result["single_selection"] = filter.SingleSelection
 	if filter.Operation != "" {
 		result["operation"] = filter.Operation
+	}
+	if filter.Unit != "" {
+		result["unit"] = filter.Unit
 	}
 
 	return result
