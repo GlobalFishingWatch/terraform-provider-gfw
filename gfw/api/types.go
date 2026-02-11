@@ -95,8 +95,8 @@ type InsightSources struct {
 }
 
 type DatasetConfigurationRange struct {
-	Min float64 `json:"min,omitempty"`
-	Max float64 `json:"max,omitempty"`
+	Min *float64 `json:"min,omitempty"`
+	Max *float64 `json:"max,omitempty"`
 }
 
 type DOIConfiguration struct {
@@ -116,8 +116,8 @@ type FilterConfig struct {
 	Format          string   `json:"format,omitempty"`
 	MaxLength       int      `json:"maxLength,omitempty"`
 	MinLength       int      `json:"minLength,omitempty"`
-	Max             float64  `json:"max,omitempty"`
-	Min             float64  `json:"min,omitempty"`
+	Max             *float64 `json:"max,omitempty"`
+	Min             *float64 `json:"min,omitempty"`
 	SingleSelection bool     `json:"singleSelection,omitempty"`
 	Operation       string   `json:"operation,omitempty"`
 	Unit            string   `json:"unit,omitempty"`
@@ -203,12 +203,12 @@ type FourwingsV1Config struct {
 	Function                     string                       `json:"function,omitempty"`
 	Intervals                    []string                     `json:"intervals,omitempty"`
 	TTL                          int                          `json:"ttl,omitempty"`
-	Max                          float64                      `json:"max,omitempty"`
-	Min                          float64                      `json:"min,omitempty"`
-	TileScale                    float64                      `json:"tileScale,omitempty"`
-	TileOffset                   float64                      `json:"tileOffset,omitempty"`
-	InternalScale                float64                      `json:"internalScale,omitempty"`
-	InternalOffset               float64                      `json:"internalOffset,omitempty"`
+	Max                          *float64                     `json:"max,omitempty"`
+	Min                          *float64                     `json:"min,omitempty"`
+	TileScale                    *float64                     `json:"tileScale,omitempty"`
+	TileOffset                   *float64                     `json:"tileOffset,omitempty"`
+	InternalScale                *float64                     `json:"internalScale,omitempty"`
+	InternalOffset               *float64                     `json:"internalOffset,omitempty"`
 	GeeBand                      string                       `json:"geeBand,omitempty"`
 	GeeImages                    []string                     `json:"geeImages,omitempty"`
 	InteractionColumns           []string                     `json:"interactionColumns,omitempty"`
@@ -231,8 +231,8 @@ type TracksV1Config struct {
 type FrontendConfig struct {
 	MaxZoom            int      `json:"maxZoom,omitempty"`
 	Translate          bool     `json:"translate,omitempty"`
-	Max                float64  `json:"max,omitempty"`
-	Min                float64  `json:"min,omitempty"`
+	Max                *float64 `json:"max,omitempty"`
+	Min                *float64 `json:"min,omitempty"`
 	DisableInteraction bool     `json:"disableInteraction,omitempty"`
 	Latitude           string   `json:"latitude,omitempty"`
 	Longitude          string   `json:"longitude,omitempty"`
@@ -252,7 +252,7 @@ type FrontendConfig struct {
 // Vessels Configuration
 type VesselsV1Config struct {
 	Index      string  `json:"index,omitempty"`
-	IndexBoost float64 `json:"indexBoost,omitempty"`
+	IndexBoost *float64 `json:"indexBoost,omitempty"`
 	Table      string  `json:"table,omitempty"`
 }
 
@@ -284,7 +284,7 @@ type ThumbnailsV1Config struct {
 	Extensions []string `json:"extensions,omitempty"`
 	Bucket     string   `json:"bucket,omitempty"`
 	Folder     string   `json:"folder,omitempty"`
-	Scale      float64  `json:"scale,omitempty"`
+	Scale      *float64 `json:"scale,omitempty"`
 }
 
 type DatasetConfiguration struct {

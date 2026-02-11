@@ -1381,22 +1381,28 @@ func schemaToFourwingsV1Config(schema map[string]interface{}) api.FourwingsV1Con
 		config.TTL = val.(int)
 	}
 	if val, ok := schema["max"]; ok {
-		config.Max = val.(float64)
+		v := val.(float64)
+		config.Max = &v
 	}
 	if val, ok := schema["min"]; ok {
-		config.Min = val.(float64)
+		v := val.(float64)
+		config.Min = &v
 	}
 	if val, ok := schema["tile_scale"]; ok {
-		config.TileScale = val.(float64)
+		v := val.(float64)
+		config.TileScale = &v
 	}
 	if val, ok := schema["tile_offset"]; ok {
-		config.TileOffset = val.(float64)
+		v := val.(float64)
+		config.TileOffset = &v
 	}
 	if val, ok := schema["internal_scale"]; ok {
-		config.InternalScale = val.(float64)
+		v := val.(float64)
+		config.InternalScale = &v
 	}
 	if val, ok := schema["internal_offset"]; ok {
-		config.InternalOffset = val.(float64)
+		v := val.(float64)
+		config.InternalOffset = &v
 	}
 	if val, ok := schema["gee_band"]; ok {
 		config.GeeBand = val.(string)
@@ -1451,10 +1457,12 @@ func schemaToFrontendConfig(schema map[string]interface{}) api.FrontendConfig {
 		config.Translate = val.(bool)
 	}
 	if val, ok := schema["max"]; ok {
-		config.Max = val.(float64)
+		v := val.(float64)
+		config.Max = &v
 	}
 	if val, ok := schema["min"]; ok {
-		config.Min = val.(float64)
+		v := val.(float64)
+		config.Min = &v
 	}
 	if val, ok := schema["disable_interaction"]; ok {
 		config.DisableInteraction = val.(bool)
@@ -1507,7 +1515,8 @@ func schemaToVesselsV1Config(schema map[string]interface{}) api.VesselsV1Config 
 		config.Index = val.(string)
 	}
 	if val, ok := schema["index_boost"]; ok {
-		config.IndexBoost = val.(float64)
+		v := val.(float64)
+		config.IndexBoost = &v
 	}
 	if val, ok := schema["table"]; ok {
 		config.Table = val.(string)
@@ -1582,7 +1591,8 @@ func schemaToThumbnailsV1Config(schema map[string]interface{}) api.ThumbnailsV1C
 		config.Folder = val.(string)
 	}
 	if val, ok := schema["scale"]; ok {
-		config.Scale = val.(float64)
+		v := val.(float64)
+		config.Scale = &v
 	}
 	return config
 }
@@ -1783,12 +1793,24 @@ func flattenFourwingsV1Config(config api.FourwingsV1Config) map[string]interface
 	a["function"] = config.Function
 	a["intervals"] = config.Intervals
 	a["ttl"] = config.TTL
-	a["max"] = config.Max
-	a["min"] = config.Min
-	a["tile_scale"] = config.TileScale
-	a["tile_offset"] = config.TileOffset
-	a["internal_scale"] = config.InternalScale
-	a["internal_offset"] = config.InternalOffset
+	if config.Max != nil {
+		a["max"] = *config.Max
+	}
+	if config.Min != nil {
+		a["min"] = *config.Min
+	}
+	if config.TileScale != nil {
+		a["tile_scale"] = *config.TileScale
+	}
+	if config.TileOffset != nil {
+		a["tile_offset"] = *config.TileOffset
+	}
+	if config.InternalScale != nil {
+		a["internal_scale"] = *config.InternalScale
+	}
+	if config.InternalOffset != nil {
+		a["internal_offset"] = *config.InternalOffset
+	}
 	a["gee_band"] = config.GeeBand
 	a["gee_images"] = config.GeeImages
 	a["interaction_columns"] = config.InteractionColumns
@@ -1813,8 +1835,12 @@ func flattenFrontendConfig(config api.FrontendConfig) map[string]interface{} {
 	a := make(map[string]interface{})
 	a["max_zoom"] = config.MaxZoom
 	a["translate"] = config.Translate
-	a["max"] = config.Max
-	a["min"] = config.Min
+	if config.Max != nil {
+		a["max"] = *config.Max
+	}
+	if config.Min != nil {
+		a["min"] = *config.Min
+	}
 	a["disable_interaction"] = config.DisableInteraction
 	a["latitude"] = config.Latitude
 	a["longitude"] = config.Longitude
@@ -1835,7 +1861,9 @@ func flattenFrontendConfig(config api.FrontendConfig) map[string]interface{} {
 func flattenVesselsV1Config(config api.VesselsV1Config) map[string]interface{} {
 	a := make(map[string]interface{})
 	a["index"] = config.Index
-	a["index_boost"] = config.IndexBoost
+	if config.IndexBoost != nil {
+		a["index_boost"] = *config.IndexBoost
+	}
 	a["table"] = config.Table
 	return a
 }
@@ -1873,7 +1901,9 @@ func flattenThumbnailsV1Config(config api.ThumbnailsV1Config) map[string]interfa
 	a["extensions"] = config.Extensions
 	a["bucket"] = config.Bucket
 	a["folder"] = config.Folder
-	a["scale"] = config.Scale
+	if config.Scale != nil {
+		a["scale"] = *config.Scale
+	}
 	return a
 }
 
@@ -1940,10 +1970,10 @@ func schemaToFilterConfig(data map[string]interface{}) api.FilterConfig {
 		filter.MinLength = v
 	}
 	if v, ok := data["max"].(float64); ok {
-		filter.Max = v
+		filter.Max = &v
 	}
 	if v, ok := data["min"].(float64); ok {
-		filter.Min = v
+		filter.Min = &v
 	}
 	if v, ok := data["single_selection"].(bool); ok {
 		filter.SingleSelection = v
@@ -2044,11 +2074,11 @@ func flattenFilterConfig(filter api.FilterConfig) map[string]interface{} {
 	if filter.MinLength != 0 {
 		result["min_length"] = filter.MinLength
 	}
-	if filter.Max != 0 {
-		result["max"] = filter.Max
+	if filter.Max != nil {
+		result["max"] = *filter.Max
 	}
-	if filter.Min != 0 {
-		result["min"] = filter.Min
+	if filter.Min != nil {
+		result["min"] = *filter.Min
 	}
 	result["single_selection"] = filter.SingleSelection
 	if filter.Operation != "" {
