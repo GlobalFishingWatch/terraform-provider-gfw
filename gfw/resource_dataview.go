@@ -145,6 +145,7 @@ func resourceDataview() *schema.Resource {
 						"pickable": {
 							Type:     schema.TypeBool,
 							Optional: true,
+							Default:  true,
 						},
 						"max_zoom": {
 							Type:     schema.TypeInt,

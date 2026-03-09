@@ -251,9 +251,9 @@ type FrontendConfig struct {
 
 // Vessels Configuration
 type VesselsV1Config struct {
-	Index      string  `json:"index,omitempty"`
+	Index      string   `json:"index,omitempty"`
 	IndexBoost *float64 `json:"indexBoost,omitempty"`
-	Table      string  `json:"table,omitempty"`
+	Table      string   `json:"table,omitempty"`
 }
 
 // Insights Configuration
@@ -359,7 +359,7 @@ type DataviewConfiguration struct {
 	ColorRamp            string                  `json:"colorRamp,omitempty"`
 	Filters              *map[string]interface{} `json:"filters,omitempty"`
 	ClusterMaxZoomLevels *map[string]interface{} `json:"clusterMaxZoomLevels,omitempty"`
-	Pickable             bool                    `json:"pickable,omitempty"`
+	Pickable             bool                    `json:"pickable"`
 	MaxZoom              int                     `json:"maxZoom,omitempty"`
 	AggregationOperation string                  `json:"aggregationOperation,omitempty"`
 	Layers               []DataviewLayer         `json:"layers,omitempty"`
