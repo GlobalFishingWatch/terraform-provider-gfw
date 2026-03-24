@@ -202,9 +202,9 @@ type FourwingsV1Config struct {
 	Project                      string                       `json:"project,omitempty"`
 	Function                     string                       `json:"function,omitempty"`
 	Intervals                    []string                     `json:"intervals,omitempty"`
-	TTL                          int                          `json:"ttl,omitempty"`
+	TTL                          int                          `json:"ttl"`
 	Max                          *float64                     `json:"max,omitempty"`
-	Min                          *float64                     `json:"min,omitempty"`
+	Min                          *float64                     `json:"min"`
 	TileScale                    *float64                     `json:"tileScale,omitempty"`
 	TileOffset                   *float64                     `json:"tileOffset,omitempty"`
 	InternalScale                *float64                     `json:"internalScale,omitempty"`
@@ -232,7 +232,7 @@ type FrontendConfig struct {
 	MaxZoom            int      `json:"maxZoom,omitempty"`
 	Translate          bool     `json:"translate,omitempty"`
 	Max                *float64 `json:"max,omitempty"`
-	Min                *float64 `json:"min,omitempty"`
+	Min                *float64 `json:"min"`
 	DisableInteraction bool     `json:"disableInteraction,omitempty"`
 	Latitude           string   `json:"latitude,omitempty"`
 	Longitude          string   `json:"longitude,omitempty"`
