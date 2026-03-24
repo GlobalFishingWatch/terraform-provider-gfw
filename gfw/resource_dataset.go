@@ -68,6 +68,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"water-temperature",
 	"waves",
 	"winds",
+	"planet",
 }
 
 var DATASET_UNITS []string = []string{
