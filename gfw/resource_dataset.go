@@ -628,6 +628,14 @@ func resourceDataset() *schema.Resource {
 										Type:     schema.TypeFloat,
 										Optional: true,
 									},
+									"min_point_size": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"max_point_size": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
 									"disable_interaction": {
 										Type:     schema.TypeBool,
 										Optional: true,
@@ -1501,6 +1509,14 @@ func schemaToFrontendConfig(schema map[string]interface{}) api.FrontendConfig {
 	if val, ok := schema["point_size"]; ok {
 		config.PointSize = val.(string)
 	}
+	if val, ok := schema["min_point_size"]; ok {
+		v := val.(float64)
+		config.MinPointSize = &v
+	}
+	if val, ok := schema["max_point_size"]; ok {
+		v := val.(float64)
+		config.MaxPointSize = &v
+	}
 	if val, ok := schema["line_id"]; ok {
 		config.LineID = val.(string)
 	}
@@ -1854,6 +1870,12 @@ func flattenFrontendConfig(config api.FrontendConfig) map[string]interface{} {
 	a["value_properties"] = config.ValueProperties
 	a["polygon_color"] = config.PolygonColor
 	a["point_size"] = config.PointSize
+	if config.MinPointSize != nil {
+		a["min_point_size"] = *config.MinPointSize
+	}
+	if config.MaxPointSize != nil {
+		a["max_point_size"] = *config.MaxPointSize
+	}
 	a["line_id"] = config.LineID
 	a["segment_id"] = config.SegmentID
 	return a

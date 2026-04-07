@@ -245,6 +245,8 @@ type FrontendConfig struct {
 	ValueProperties    []string `json:"valueProperties,omitempty"`
 	PolygonColor       string   `json:"polygonColor,omitempty"`
 	PointSize          string   `json:"pointSize,omitempty"`
+	MinPointSize       *float64 `json:"minPointSize,omitempty"`
+	MaxPointSize       *float64 `json:"maxPointSize,omitempty"`
 	LineID             string   `json:"lineId,omitempty"`
 	SegmentID          string   `json:"segmentId,omitempty"`
 }
