@@ -69,6 +69,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"waves",
 	"winds",
 	"planet",
+	"real-time",
 }
 
 var DATASET_UNITS []string = []string{
