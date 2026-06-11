@@ -10,7 +10,7 @@ import (
 const DATASET_PATH = "datasets"
 
 func (c *GFWClient) GetDatasets() (*[]Dataset, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION&cache=false", c.HostURL, DATASET_PATH), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION&no-translate=true&cache=false", c.HostURL, DATASET_PATH), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (c *GFWClient) GetDatasets() (*[]Dataset, error) {
 }
 
 func (c *GFWClient) GetDataset(id string) (*Dataset, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION&cache=false", c.HostURL, DATASET_PATH, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION&no-translate=true&cache=false", c.HostURL, DATASET_PATH, id), nil)
 	if err != nil {
 		return nil, err
 	}
