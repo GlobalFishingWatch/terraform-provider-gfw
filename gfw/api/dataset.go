@@ -74,7 +74,7 @@ func (c *GFWClient) UpdateDataset(id string, dataset CreateDataset) error {
 		return err
 	}
 	fmt.Println(string(bodyReq))
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION", c.HostURL, DATASET_PATH, id), strings.NewReader(string(bodyReq)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION&override-alias=true", c.HostURL, DATASET_PATH, id), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func (c *GFWClient) CreateDataset(dataset CreateDataset) (*Dataset, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION", c.HostURL, DATASET_PATH), strings.NewReader(string(bodyReq)))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s?includes[0]=BACKEND_CONFIGURATION&includes[1]=DESCRIPTION&override-alias=true", c.HostURL, DATASET_PATH), strings.NewReader(string(bodyReq)))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
 		return nil, err
