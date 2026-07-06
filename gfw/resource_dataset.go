@@ -63,6 +63,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"sar",
 	"sentinel-2",
 	"track",
+	"track-realtime",
 	"user",
 	"viirs",
 	"water-temperature",
