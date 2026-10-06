@@ -100,7 +100,7 @@ var DATASET_CONTEXT_LAYER_FORMATS []string = []string{"csv", "geojson", "pmtile"
 var DATASET_BULK_DOWNLOAD_FORMATS []string = []string{"CSV", "JSON"}
 var DATASET_4WINGS_INTERVALS []string = []string{"HOUR", "DAY", "MONTH", "YEAR"}
 var DATASET_FRONTEND_FORMATS []string = []string{"GeoJSON", "Shapefile", "CSV", "KML"}
-var DATASET_4WINGS_REPORT_GROUPINGS []string = []string{"vessel_id", "mmsi", "geartype", "flag", "flagAndGearType"}
+var DATASET_4WINGS_REPORT_GROUPINGS []string = []string{"vessel_id", "mmsi", "geartype", "flag", "flagAndGearType", "detect_id"}
 var DATASET_SOURCE_TYPES []string = []string{"gcs", "bigquery", "clickhouse"}
 
 func filterConfigSchema() map[string]*schema.Schema {
