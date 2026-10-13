@@ -71,7 +71,7 @@ var DATASET_SUBCATEGORIES []string = []string{
 	"winds",
 	"planet",
 	"real-time",
-	"dark-rendezvous",
+	"dark_rendezvous",
 }
 
 var DATASET_UNITS []string = []string{
