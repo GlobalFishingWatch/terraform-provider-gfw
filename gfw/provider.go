@@ -36,6 +36,7 @@ func Provider() *schema.Provider {
 			"gfw_dataset":          resourceDataset(),
 			"gfw_dataview":         resourceDataview(),
 			"gfw_workspace":        resourceWorkspace(),
+			"gfw_report":           resourceReport(),
 		},
 		DataSourcesMap:       map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,
