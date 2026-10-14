@@ -1,5 +1,7 @@
 package api
 
+import "encoding/json"
+
 type Action struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -437,8 +439,8 @@ type CreateWorkspace struct {
 	Category          string                       `json:"category,omitempty"`
 	App               string                       `json:"app,omitempty"`
 	Aoi               string                       `json:"aoi,omitempty"`
-	StartAt           string                       `json:"startAt,omitempty"`
-	EndAt             string                       `json:"endAt,omitempty"`
+	StartAt           json.RawMessage              `json:"startAt,omitempty"`
+	EndAt             json.RawMessage              `json:"endAt,omitempty"`
 	Public            bool                         `json:"public,omitempty"`
 	Viewport          *WorkspaceViewport           `json:"viewport,omitempty"`
 	State             *map[string]interface{}      `json:"state,omitempty"`

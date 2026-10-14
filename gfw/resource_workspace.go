@@ -247,10 +247,10 @@ func schemaToWorkspace(d *schema.ResourceData) (api.CreateWorkspace, error) {
 		workspace.Public = d.Get("public").(bool)
 	}
 	if d.HasChange("start_at") {
-		workspace.StartAt = d.Get("start_at").(string)
+		workspace.StartAt = jsonStringOrNull(d.Get("start_at").(string))
 	}
 	if d.HasChange("end_at") {
-		workspace.EndAt = d.Get("end_at").(string)
+		workspace.EndAt = jsonStringOrNull(d.Get("end_at").(string))
 	}
 	if d.HasChange("aoi") {
 		workspace.Aoi = d.Get("aoi").(string)
@@ -389,4 +389,13 @@ func flattenWorkspaceDataviewInstances(dataviewInstances []api.WorkspaceDataview
 
 	}
 	return list, nil
+}
+
+// Removed attributes must be sent as null: omitempty would drop them and the API keeps the old value.
+func jsonStringOrNull(s string) json.RawMessage {
+	if s == "" {
+		return json.RawMessage("null")
+	}
+	b, _ := json.Marshal(s)
+	return b
 }
