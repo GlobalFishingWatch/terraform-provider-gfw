@@ -454,3 +454,47 @@ type Pagination[T any] struct {
 	Metadata   map[string]interface{} `json:"metadata"`
 	Entries    []T                    `json:"entries"`
 }
+
+// ReportWorkspace is the workspace embedded (as jsonb) in a report, not a workspace entity.
+type ReportWorkspace struct {
+	ID                string                       `json:"id,omitempty"`
+	Name              string                       `json:"name"`
+	Description       string                       `json:"description"`
+	Category          string                       `json:"category,omitempty"`
+	App               string                       `json:"app"`
+	StartAt           string                       `json:"startAt,omitempty"`
+	EndAt             string                       `json:"endAt,omitempty"`
+	Viewport          *WorkspaceViewport           `json:"viewport,omitempty"`
+	State             *map[string]interface{}      `json:"state,omitempty"`
+	DataviewInstances *[]WorkspaceDataviewInstance `json:"dataviewInstances,omitempty"`
+}
+
+type Report struct {
+	ID          string           `json:"id"`
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	AreaID      string           `json:"areaId"`
+	DatasetID   string           `json:"datasetId"`
+	Public      bool             `json:"public"`
+	Workspace   *ReportWorkspace `json:"workspace"`
+	CreatedAt   string           `json:"createdAt"`
+}
+
+type CreateReport struct {
+	ID          string           `json:"id,omitempty"`
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	AreaID      string           `json:"areaId"`
+	DatasetID   string           `json:"datasetId"`
+	Public      bool             `json:"public,omitempty"`
+	Workspace   *ReportWorkspace `json:"workspace,omitempty"`
+}
+
+// UpdateReport has no id/public: the API rejects them on PATCH (forbidNonWhitelisted).
+type UpdateReport struct {
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	AreaID      string           `json:"areaId"`
+	DatasetID   string           `json:"datasetId"`
+	Workspace   *ReportWorkspace `json:"workspace,omitempty"`
+}
