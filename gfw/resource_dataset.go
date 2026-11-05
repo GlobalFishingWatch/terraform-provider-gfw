@@ -851,6 +851,9 @@ func resourceDataset() *schema.Resource {
 			"filters": {
 				Type:     schema.TypeList,
 				Optional: true,
+				// Computed: the API can populate filters (e.g. userContextLayers for user-uploaded context datasets).
+				// Without this, datasets that omit the block plan a removal on every run.
+				Computed: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
