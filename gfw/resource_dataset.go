@@ -100,6 +100,8 @@ var DATASET_CONFIGURATION_GEOMETRY_TYPES []string = []string{"tracks", "polygons
 var DATASET_CONTEXT_LAYER_FORMATS []string = []string{"csv", "geojson", "pmtile"}
 var DATASET_BULK_DOWNLOAD_FORMATS []string = []string{"CSV", "JSON"}
 var DATASET_4WINGS_INTERVALS []string = []string{"HOUR", "DAY", "MONTH", "YEAR"}
+var DATASET_4WINGS_AGG_LAYOUT_VERSIONS []string = []string{"v1", "v2"}
+var DATASET_4WINGS_DEFAULT_AGG_LAYOUT_VERSION string = "v1"
 var DATASET_FRONTEND_FORMATS []string = []string{"GeoJSON", "Shapefile", "CSV", "KML"}
 var DATASET_4WINGS_REPORT_GROUPINGS []string = []string{"vessel_id", "mmsi", "geartype", "flag", "flagAndGearType", "detect_id"}
 var DATASET_SOURCE_TYPES []string = []string{"gcs", "bigquery", "clickhouse"}
@@ -579,6 +581,12 @@ func resourceDataset() *schema.Resource {
 									"folder": {
 										Type:     schema.TypeString,
 										Optional: true,
+									},
+									"agg_layout_version": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										Default:      DATASET_4WINGS_DEFAULT_AGG_LAYOUT_VERSION,
+										ValidateFunc: validation.StringInSlice(DATASET_4WINGS_AGG_LAYOUT_VERSIONS, false),
 									},
 								},
 							},
@@ -1443,6 +1451,9 @@ func schemaToFourwingsV1Config(schema map[string]interface{}) api.FourwingsV1Con
 	if val, ok := schema["folder"]; ok {
 		config.Folder = val.(string)
 	}
+	if val, ok := schema["agg_layout_version"]; ok {
+		config.AggLayoutVersion = val.(string)
+	}
 	return config
 }
 
@@ -1842,6 +1853,13 @@ func flattenFourwingsV1Config(config api.FourwingsV1Config) map[string]interface
 	a["source"] = config.Source
 	a["bucket"] = config.Bucket
 	a["folder"] = config.Folder
+	// Datasets created before aggLayoutVersion existed have no value in the API;
+	// they use the v1 layout, so map empty to the default to avoid a permanent diff.
+	if config.AggLayoutVersion != "" {
+		a["agg_layout_version"] = config.AggLayoutVersion
+	} else {
+		a["agg_layout_version"] = DATASET_4WINGS_DEFAULT_AGG_LAYOUT_VERSION
+	}
 	return a
 }
 
