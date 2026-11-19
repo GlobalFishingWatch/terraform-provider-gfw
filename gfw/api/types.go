@@ -219,7 +219,7 @@ type FourwingsV1Config struct {
 	Source                       string                       `json:"source,omitempty"`
 	Bucket                       string                       `json:"bucket,omitempty"`
 	Folder                       string                       `json:"folder,omitempty"`
-	LayoutVersion                string                       `json:"layoutVersion,omitempty"`
+	AggLayoutVersion             string                       `json:"aggLayoutVersion,omitempty"`
 }
 
 // Tracks Configuration
